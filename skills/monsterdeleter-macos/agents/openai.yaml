@@ -1,0 +1,4 @@
+interface:
+  display_name: "MonsterDeleter Cat & Mouse"
+  short_description: "设计并优化猫鼠奶酪追逐式删除体验"
+  default_prompt: "使用 $monsterdeleter-macos 设计并优化 MonsterDeleter 的奶酪确认、老鼠逃跑和猫追逐动画。"
