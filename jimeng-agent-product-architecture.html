@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>即梦 Agent 模式｜用户旅程、Agent 契约与产品架构</title>
+<style>
+:root{color-scheme:dark;--bg:#090b0f;--panel:#151820;--panel2:#1c2029;--ink:#f4f6f8;--muted:#9da6b2;--line:#343a46;--cyan:#08c4dc;--fact:#48d696;--infer:#ffb657;--design:#9aa8ff;--unknown:#a7a8ae;--danger:#ff7385}
+*{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--bg)}body{margin:0;background:radial-gradient(circle at 80% 5%,#10232a 0,transparent 28%),var(--bg);color:var(--ink);font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif}.layout{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:100vh}aside{position:sticky;top:0;height:100vh;overflow:auto;padding:24px 16px;border-right:1px solid var(--line);background:rgba(9,11,15,.96)}main{min-width:0;max-width:1600px;padding:44px clamp(20px,4vw,64px) 90px}nav{display:grid;gap:3px;margin-top:20px}nav a{color:var(--muted);text-decoration:none;padding:6px 8px;border-radius:7px;font-size:11px}nav a:hover{background:var(--panel);color:var(--ink)}h1{font-size:clamp(40px,5.5vw,76px);line-height:1.02;margin:12px 0 18px;letter-spacing:-.04em}h2{font-size:25px;margin:0 0 20px}h3{font-size:17px;margin:0 0 10px}h4{font-size:13px;margin:14px 0 6px}p,li,td,th{font-size:12px;line-height:1.7}.lead{font-size:16px;color:#c7cbd2;max-width:900px}.muted,.source{color:var(--muted)}section{scroll-margin-top:20px;margin-top:56px;padding-top:22px;border-top:1px solid var(--line)}.eyebrow{font-size:10px;color:var(--cyan);letter-spacing:.15em}.legend,.chips,.filters{display:flex;gap:8px;flex-wrap:wrap}.tag,.chip,button{border:1px solid var(--line);border-radius:999px;padding:5px 8px;font-size:10px;background:#11141a;color:var(--ink)}.fact{color:var(--fact)}.infer{color:var(--infer)}.design{color:var(--design)}.unknown{color:var(--unknown)}.danger-text{color:var(--danger)}.grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.card{background:linear-gradient(145deg,var(--panel),#11141a);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}.card.cyan{border-color:#17626c}.card.warn{border-color:#6e5429}.card.danger{border-color:#6f3541}.kpi{font-size:34px;font-weight:750;color:var(--cyan)}.callout{border:1px solid var(--line);border-left:4px solid var(--cyan);background:var(--panel);border-radius:10px;padding:14px;margin:14px 0}.callout.warn{border-left-color:var(--infer)}.callout.danger{border-left-color:var(--danger)}.scroll,.diagram{overflow-x:auto;border:1px solid var(--line);border-radius:11px}.scroll{background:var(--panel)}table{width:100%;min-width:980px;border-collapse:collapse}th,td{padding:9px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th{position:sticky;top:0;background:#1b1f27;color:#cbd0d7}.evidence{color:#77dbea;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.shot{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}.shot img{display:block;width:100%;height:220px;object-fit:cover;object-position:top}.shot figcaption{padding:10px;font-size:11px;color:var(--muted)}.journey{display:grid;gap:9px;min-width:1180px;padding:12px}.lane{display:grid;grid-template-columns:100px repeat(7,minmax(145px,1fr));gap:8px}.lane-name{display:flex;align-items:center;color:var(--cyan);font-weight:700}.node{background:#171b23;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:11px;line-height:1.55}.node b{display:block;margin-bottom:4px}.node.decision{clip-path:polygon(9% 0,91% 0,100% 50%,91% 100%,9% 100%,0 50%);padding-left:18px;padding-right:18px;border:0;background:#27252a}.node.future{border-style:dashed;color:var(--muted)}.node.stop{border-color:#6f3541}.agent-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.io{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.layer{display:grid;grid-template-columns:150px minmax(0,1fr);border-bottom:1px solid var(--line)}.layer:last-child{border-bottom:0}.layer-title{padding:12px;color:var(--cyan);font-weight:700}.layer-body{padding:10px;display:flex;flex-wrap:wrap;gap:7px}.box{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:10px;background:#101319}.box.infer{border-style:dashed}.box.design{border-style:dashed;border-color:#6673c7}.diagram{background:#f6f8fb;color:#111722;padding:12px}.mermaid{min-width:920px}.trace-row[hidden]{display:none}.footer{margin-top:60px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:10px}@media(max-width:900px){.layout{grid-template-columns:1fr}aside{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--line)}nav{display:flex;overflow:auto;white-space:nowrap}.g2,.g3,.g4,.gallery,.io{grid-template-columns:1fr}main{padding-top:28px}.shot img{height:auto}}@media print{aside,.filters{display:none}.layout{display:block}body{background:#fff;color:#111}.card,.callout,.scroll{background:#fff;color:#111}.muted,.source,.lead{color:#555}}
+</style>
+</head>
+<body><div class="layout">
+<aside><div class="eyebrow">EVIDENCE REPORT</div><strong>即梦 Agent 模式</strong><p class="source">3 张用户截图 + 官方页面补充<br>2026-08-19</p><nav>
+<a href="#summary">1 执行摘要</a><a href="#evidence">2 证据与缺口</a><a href="#domains">3 功能域</a><a href="#flow">4 用户旅程</a><a href="#layers">5 分层架构</a><a href="#agents">6 Agent 契约</a><a href="#context">7 上下文与状态</a><a href="#knowledge">8 技能与知识</a><a href="#models">9 模型接入</a><a href="#selection">10 能力选型</a><a href="#entities">11 逻辑实体</a><a href="#sequence">12 时序</a><a href="#panorama">13 全景架构</a><a href="#asis">14 As-Is</a><a href="#tobe">15 产品机会</a><a href="#risks">16 风险</a><a href="#trace">17 证据追溯</a><a href="#unknowns">18 未知与补证</a>
+</nav></aside>
+<main>
+<header><div class="eyebrow">JIMENG · AGENT MODE · REVERSE ENGINEERING</div><h1>即梦 Agent 模式<br>产品拆解</h1><p class="lead">从一句视频需求，到 Agent 扩写生成方案，再到积分确认门。当前证据截止在“全部生成”之前，因此报告能确认规划与确认流程，不能确认视频工具真正执行或最终成片质量。</p><div class="legend"><span class="tag fact">【已确认】</span><span class="tag infer">【合理推断】</span><span class="tag design">【建议设计】</span><span class="tag unknown">【未知】</span></div></header>
+
+<section id="summary"><h2>1. 执行摘要</h2>
+<div class="grid g4"><div class="card cyan"><div class="kpi">1</div><b>公开 Agent 身份</b><p class="muted">页面只显示“Agent 模式”，没有具名专业 Agent。</p></div><div class="card"><div class="kpi">6</div><b>创作类型入口</b><p class="muted">图片、视频、音乐、配音、数字人、动作模仿。</p></div><div class="card warn"><div class="kpi">1</div><b>强制确认门</b><p class="muted">调用视频生成前提示积分，并提供取消/全部生成。</p></div><div class="card danger"><div class="kpi">0</div><b>已验证成片</b><p class="muted">截图未显示任务执行、视频预览或资产落库。</p></div></div>
+<div class="callout"><strong>核心结论：</strong>【已确认】即梦把 Agent 定位成跨创作类型的统一自然语言入口。它先把用户的一句话需求整理为一条更具体的视频生成描述，然后在消耗积分和调用视频生成工具之前设置显式确认门。<span class="evidence">S01–S03</span></div>
+<div class="callout danger"><strong>状态冲突：</strong>页面标题显示“已完成”，正文却说“接下来会调用视频生成工具直接提交任务”。因此“已完成”只能确认规划阶段结束，不能确认视频生成完成。<span class="evidence">S03</span></div>
+</section>
+
+<section id="evidence"><h2>2. 查看范围、证据与缺口</h2>
+<div class="gallery">
+<figure class="shot"><img src="web-assets/jimeng/S01.jpg" alt="即梦 Agent 模式与创作类型选择"><figcaption><b>S01</b> Agent 模式首页；创作类型菜单、技能、主体、积分和产品导航。</figcaption></figure>
+<figure class="shot"><img src="web-assets/jimeng/S02.jpg" alt="用户输入暗黑巨龙视频需求"><figcaption><b>S02</b> 用户填写一条视频需求，Agent 模式、自动和技能入口保持可见。</figcaption></figure>
+<figure class="shot"><img src="web-assets/jimeng/S03.jpg" alt="视频生成前的计划和积分确认门"><figcaption><b>S03</b> Agent 生成一条视频方案，提示积分消耗，等待“取消/全部生成”。</figcaption></figure>
+</div>
+<div class="scroll" style="margin-top:14px"><table><thead><tr><th>证据</th><th>页面原文/控件</th><th>可见状态</th><th>支持结论</th><th>限制</th></tr></thead><tbody>
+<tr><td class="evidence">S01</td><td>“开启你的 Agent 模式 即刻造梦！”；“输入想法、剧本或上传参考”；“使用技能”；“@ 添加主体”；创作类型菜单</td><td>Agent 模式已选；积分余额 66；可切换 6 类创作</td><td>统一输入面、技能入口、主体引用、余额入口</td><td>入口存在不等于技能/主体已被调用</td></tr>
+<tr><td class="evidence">S02</td><td>“生成一个暗黑风格，巨龙在天上盘旋，远处电闪雷鸣还伴随着火山迸发的熔浆的视频”</td><td>需求已填写；未见参考素材</td><td>原始用户需求及提交前状态</td><td>截图未显示点击提交瞬间与规划耗时</td></tr>
+<tr><td class="evidence">S03</td><td>“已完成”；“接下来会调用视频生成工具”；“继续任务将消耗一定积分”；“取消”；“全部生成”；“本次消耗 0 积分”</td><td>1 条方案被选中，等待用户确认</td><td>规划产物、工具调用计划、积分确认门、中断入口</td><td>未显示实际积分数、生成任务、失败或最终视频</td></tr>
+<tr><td class="evidence">O01</td><td><a href="https://jimeng.jianying.com/ai-tool/home?activeTab=short_video">即梦官方页面</a>可见 Agent 模式、图片/视频/音乐/配音/数字人/动作模仿及技能入口</td><td>公开产品能力面</td><td>截图之外的入口名称交叉验证</td><td>动态页面会更新；不证明本次任务执行</td></tr>
+</tbody></table></div>
+<div class="callout warn"><strong>无法访问或无法确认：</strong>真实生成过程、实际扣费、积分不足、安全拦截、失败重试、生成后视频卡片、资产历史、画布节点、编辑器、下载/发布、模型实际选择与参数。</div>
+</section>
+
+<section id="domains"><h2>3. 产品类型与功能域适用性</h2>
+<p class="lead">主类型是媒体创作；次类型是技能驱动的 Agent 工作台。分析咨询、企业审批等领域不适用。</p>
+<div class="scroll"><table><thead><tr><th>功能域</th><th>状态</th><th>即梦中的对应物</th><th>证据</th><th>备注</th></tr></thead><tbody>
+<tr><td>统一创作入口</td><td>observed</td><td>Agent 模式 + 自然语言输入</td><td class="evidence">S01–S02</td><td>支持文本、剧本、参考上传提示</td></tr>
+<tr><td>技能/主体引用</td><td>partial</td><td>“使用技能”、“@”</td><td class="evidence">S01–S02</td><td>入口可见，实际选择与执行未观察</td></tr>
+<tr><td>创作规划</td><td>observed</td><td>生成逻辑摘要 + 1 条视频方案</td><td class="evidence">S03</td><td>公开的是结果摘要，不是隐藏思维链</td></tr>
+<tr><td>确认与计费</td><td>partial</td><td>积分提示、取消、全部生成</td><td class="evidence">S03</td><td>确认门存在，精确价格未显示</td></tr>
+<tr><td>视频生成</td><td>partial</td><td>“接下来会调用视频生成工具”</td><td class="evidence">S03</td><td>只有计划，没有执行/结果证据</td></tr>
+<tr><td>资产/画布</td><td>partial</td><td>左侧“资产”“画布”入口</td><td class="evidence">S01</td><td>没有本任务资产或画布变化</td></tr>
+<tr><td>编辑/发布/下载</td><td>not observed</td><td>当前截图范围未出现</td><td class="evidence">S01–S03</td><td>只代表本次范围未观察</td></tr>
+<tr><td>分析咨询/企业工作流</td><td>not applicable</td><td>—</td><td>产品类型判断</td><td>不套用无关模板</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="flow"><h2>4. 用户旅程证据表与三泳道图</h2>
+<div class="scroll"><table><thead><tr><th>阶段</th><th>用户目标</th><th>用户动作</th><th>页面反馈</th><th>用户决定</th><th>页面/资产变化</th><th>情绪与阻力</th><th>证据</th></tr></thead><tbody>
+<tr><td>J01 选择创作方式</td><td>用自然语言完成视频</td><td>选择“Agent 模式”；也可切到视频生成等直接模式</td><td>显示统一输入框、自动、使用技能、@、上传和语音</td><td>Agent 自动编排，还是直接使用单项生成器</td><td>当前模式高亮</td><td>入口丰富，但“自动”究竟自动决定什么不透明</td><td class="evidence">S01</td></tr>
+<tr><td>J02 描述需求</td><td>生成暗黑奇幻灾难视频</td><td>输入巨龙、雷电、火山熔浆的场景描述</td><td>输入内容保留；提交箭头可用</td><td>提交、补充素材/主体/技能或退出</td><td>形成当前用户需求</td><td>一句话门槛低；时长、比例、镜头、模型与预算均未指定</td><td class="evidence">S02</td></tr>
+<tr><td>J03 Agent 整理方案</td><td>把模糊需求变成可生成任务</td><td>提交后等待</td><td>显示“已完成”与生成逻辑摘要；产生 1 条更具体的视频描述</td><td>接受这条方案，或取消</td><td>新增方案卡；默认勾选 1 条</td><td>Agent 有价值地补足氛围，但用户看不到参数和修改入口</td><td class="evidence">S03</td></tr>
+<tr><td>J04 生成前确认</td><td>控制积分消耗</td><td>查看计划与积分提示</td><td>“继续任务将消耗一定积分”；按钮“取消/全部生成”</td><td>继续 / 中断</td><td>尚未出现生成任务；规划阶段显示消耗 0 积分</td><td>风险可控，但具体将扣多少积分不清楚</td><td class="evidence">S03</td></tr>
+<tr><td>J05 提交视频工具</td><td>开始生成</td><td>点击“全部生成”</td><td>【未知】截图只说下一步会调用工具</td><td>生成中继续等待、取消或重试</td><td>【未知】任务/资产/扣费状态</td><td>最关键的执行与可恢复性缺失</td><td class="evidence">超出 S03</td></tr>
+<tr><td>J06 查看与修改成片</td><td>验收、纠偏、导出</td><td>【未知】</td><td>【未知】</td><td>满意/不满意；局部修改/重新生成</td><td>【未知】视频、资产版本、画布、编辑器</td><td>没有证据确认闭环是否顺畅</td><td class="evidence">尚需补证</td></tr>
+</tbody></table></div>
+<div class="scroll" style="margin-top:14px"><div class="journey">
+<div class="lane"><div class="lane-name">用户</div><div class="node decision"><b>选择模式</b>Agent / 直接生成<br><span class="evidence">S01</span></div><div class="node"><b>输入需求</b>暗黑巨龙灾难视频<br><span class="evidence">S02</span></div><div class="node decision"><b>是否补充？</b>参考 / 技能 / 主体<br><span class="evidence">S01</span></div><div class="node"><b>提交并等待</b><span class="evidence">S02→S03</span></div><div class="node decision"><b>接受方案？</b>继续 / 取消<br><span class="evidence">S03</span></div><div class="node future"><b>等待生成</b>成功 / 失败 / 中断【未知】</div><div class="node future"><b>验收结果</b>满意 / 修改【未知】</div></div>
+<div class="lane"><div class="lane-name">产品界面</div><div class="node">模式菜单与统一输入框</div><div class="node">保留原始文本；提交箭头</div><div class="node">技能/@/上传入口</div><div class="node">显示规划摘要</div><div class="node decision">积分确认门<br>取消 / 全部生成</div><div class="node future">任务进度、取消、重试【未知】</div><div class="node future">预览、编辑、下载【未知】</div></div>
+<div class="lane"><div class="lane-name">系统结果</div><div class="node">建立 Agent 模式上下文</div><div class="node">接收自然语言需求</div><div class="node">选择使用何种技能【推断】</div><div class="node">生成 1 条扩写方案</div><div class="node stop">取消→未调用视频工具<br>继续→计划调用</div><div class="node future">视频任务/计费/资产【未知】</div><div class="node future">质量验证/版本交接【未知】</div></div>
+</div></div>
+</section>
+
+<section id="layers"><h2>5. 九层产品架构</h2>
+<div class="card" style="padding:0">
+<div class="layer"><div class="layer-title">1 用户与渠道</div><div class="layer-body"><span class="box">网页创作者</span><span class="box">积分余额 66</span><span class="box infer">会员/账户</span></div></div>
+<div class="layer"><div class="layer-title">2 交互工作台</div><div class="layer-body"><span class="box">Agent 模式输入框</span><span class="box">模式菜单</span><span class="box">上传</span><span class="box">语音</span><span class="box">@ 主体</span><span class="box">确认卡</span><span class="box">取消/全部生成</span></div></div>
+<div class="layer"><div class="layer-title">3 产品应用</div><div class="layer-body"><span class="box">图片生成</span><span class="box">视频生成</span><span class="box">音乐生成</span><span class="box">配音生成</span><span class="box">数字人</span><span class="box">动作模仿</span><span class="box">资产</span><span class="box">画布</span></div></div>
+<div class="layer"><div class="layer-title">4 Agent/编排</div><div class="layer-body"><span class="box">公开“Agent 模式”</span><span class="box infer">意图识别</span><span class="box infer">方案生成</span><span class="box infer">技能选择</span><span class="box">用户确认门</span><span class="box design">运行状态协调器</span></div></div>
+<div class="layer"><div class="layer-title">5 工具/服务</div><div class="layer-body"><span class="box">技能目录入口</span><span class="box">视频生成工具（仅计划）</span><span class="box infer">积分检查</span><span class="box design">媒体验证器</span><span class="box design">幂等/取消服务</span></div></div>
+<div class="layer"><div class="layer-title">6 模型接入</div><div class="layer-body"><span class="box">图片 5.0 Pro 展示卡</span><span class="box">Seedance 2.5 适配插件卡</span><span class="box infer">多模型路由</span><span class="box design">模型能力目录</span></div></div>
+<div class="layer"><div class="layer-title">7 上下文/数据</div><div class="layer-body"><span class="box">原始需求</span><span class="box">当前模式</span><span class="box">方案卡</span><span class="box">确认状态</span><span class="box infer">积分上下文</span><span class="box design">任务/资产版本</span></div></div>
+<div class="layer"><div class="layer-title">8 知识/资产</div><div class="layer-body"><span class="box">技能</span><span class="box">主体引用</span><span class="box">用户参考素材入口</span><span class="box design">提示词模板版本</span><span class="box design">安全/版权规则</span></div></div>
+<div class="layer"><div class="layer-title">9 基础设施/治理</div><div class="layer-body"><span class="box unknown">当前实现未知</span><span class="box design">异步任务</span><span class="box design">对象存储</span><span class="box design">审计与对账</span><span class="box design">隐私/保留期</span></div></div>
+</div>
+</section>
+
+<section id="agents"><h2>6. Agent 清单、能力边界与 I/O 契约</h2>
+<div class="callout"><strong>Agent 计数规则：</strong>【已确认】只有一个公开身份：“Agent 模式”。图片生成、视频生成、技能、主体、资产和画布是模式/应用/工具入口，不能据此虚构多个专业 Agent。后端是否存在路由 Agent、Prompt Agent 或执行 Agent均为【未知】。</div>
+<div class="card">
+<div class="agent-head"><div><div class="eyebrow">PUBLIC AGENT CONTRACT A01</div><h3>Agent 模式（未显示专名）</h3></div><span class="tag fact">公开模式身份已确认</span></div>
+<div class="io"><div><h4>1. 核心目标</h4><p>把用户的自然语言、剧本和可选参考，整理为可确认的媒体创作任务，并在获得用户确认后交给对应生成工具。</p><h4>2. 触发条件</h4><p>用户选择“Agent 模式”并提交创作需求。<span class="evidence">S01–S02</span></p><h4>3. 输入契约</h4><ul><li><b>用户当前输入：</b>文本需求；可选参考上传、技能选择、@主体、语音。</li><li><b>用户长期信息：</b>页面可见积分余额；会员、偏好、历史资产读取【未知】。</li><li><b>项目上下文：</b>当前模式、自动设置、选择的技能/主体/参考；稳定字段名【未知】。</li><li><b>上游 Agent：</b>未发现。</li><li><b>平台公共资产：</b>技能和创作类型目录可见；具体规则【未知】。</li><li><b>运行结果：</b>规划后的方案卡与确认状态。</li></ul></div><div><h4>4. 可观察判断</h4><ul><li>识别请求属于视频生成。</li><li>将一句需求扩展为更具体的暗黑魔幻视频描述。</li><li>决定本轮产生 1 个待生成视频。</li><li>在视频工具调用前请求用户确认积分消耗。</li></ul><h4>5. 输出</h4><ul><li><b>用户回复：</b>生成逻辑已经梳理、下一步工具计划。</li><li><b>页面组件：</b>方案卡、勾选框、取消、全部生成、积分提示。</li><li><b>结构化对象：</b>1 个候选视频任务【合理推断】。</li><li><b>资产：</b>只有文字方案；视频资产未出现。</li><li><b>下游任务：</b>计划交给视频生成工具。</li></ul><h4>6. 完成条件</h4><p>在当前证据中只能确认“规划完成”。端到端完成必须另行验证：任务创建、积分状态、视频资产存在、可播放、与需求一致、页面状态同步。</p></div></div>
+</div>
+<h3 style="margin-top:18px">功能工具表</h3>
+<div class="scroll"><table><thead><tr><th>ID</th><th>功能性名称</th><th>调用者</th><th>前置条件</th><th>执行证据</th><th>成功结果</th><th>失败/重试</th><th>等级</th></tr></thead><tbody>
+<tr><td>T01</td><td>读取多模态创作输入<br><span class="unknown">非官方工具名</span></td><td>A01</td><td>文本/剧本/参考已提交</td><td>输入入口可见；本次仅文本</td><td>形成当前需求</td><td>格式、大小、解析失败未知</td><td>入口【已确认】；执行范围【部分】</td></tr>
+<tr><td>T02</td><td>选择/使用技能<br><span class="unknown">非官方工具名</span></td><td>A01/用户</td><td>“使用技能”或自动模式</td><td>只有按钮</td><td>应绑定某项能力</td><td>未知</td><td>能力入口【已确认】；调用【未知】</td></tr>
+<tr><td>T03</td><td>生成视频任务方案<br><span class="unknown">非官方工具名</span></td><td>A01</td><td>提交需求</td><td>扩写描述与 1 条方案卡存在</td><td>待确认视频任务</td><td>修改/重规划机制未知</td><td>结果【已确认】</td></tr>
+<tr><td>T04</td><td>检查积分并建立确认门<br><span class="unknown">非官方工具名</span></td><td>产品界面/A01</td><td>准备调用付费生成</td><td>“一定积分”提示和按钮</td><td>记录继续或取消</td><td>余额不足路径未知</td><td>页面【已确认】；后台检查【推断】</td></tr>
+<tr><td>T05</td><td>视频生成工具<br><span class="unknown">页面功能命名</span></td><td>A01 下游</td><td>用户点“全部生成”且额度满足</td><td>Agent 只说“接下来会调用”</td><td>视频任务/媒体资产</td><td>失败、重试、扣费未知</td><td>计划【已确认】；执行【未知】</td></tr>
+<tr><td>T06</td><td>写入资产/画布<br><span class="unknown">非官方工具名</span></td><td>生成服务</td><td>工具成功</td><td>只有导航入口</td><td>资产版本和画布节点</td><td>写入失败未知</td><td>【未知】</td></tr>
+</tbody></table></div>
+<h3 style="margin-top:18px">Agent 状态机</h3>
+<div class="diagram"><pre class="mermaid">stateDiagram-v2
+[*] --> waiting_input
+waiting_input --> planning: 用户提交视频需求 [S02]
+planning --> waiting_confirm: 方案卡与积分提示出现 [S03]
+waiting_confirm --> interrupted: 点击取消 [S03]
+waiting_confirm --> executing: 点击全部生成 / 余额充足 [未观察]
+waiting_confirm --> failed: 余额不足 [未知]
+executing --> validating: 视频工具返回 [未知]
+executing --> failed: 工具失败 [未知]
+executing --> interrupted: 生成中取消 [未知]
+failed --> retrying: 用户重试 [未知]
+retrying --> executing
+validating --> completed: 资产存在且验证通过 [建议完成门]
+completed --> handoff: 预览/资产/画布 [未知]
+interrupted --> [*]
+handoff --> [*]</pre></div>
+</section>
+
+<section id="context"><h2>7. 全局上下文与状态一致性</h2>
+<div class="scroll"><table><thead><tr><th>对象/字段</th><th>读写</th><th>生产者</th><th>消费者</th><th>更新时机</th><th>版本/失效</th><th>证据等级</th><th>证据</th></tr></thead><tbody>
+<tr><td>OriginalRequest</td><td>写→读</td><td>用户</td><td>A01</td><td>提交需求</td><td>建议不可变</td><td>【已确认】值；字段名为设计</td><td class="evidence">S02</td></tr>
+<tr><td>CreationMode</td><td>写→读</td><td>用户/UI</td><td>A01/应用路由</td><td>切换菜单</td><td>切换后应使旧计划失效</td><td>【已确认】值</td><td class="evidence">S01</td></tr>
+<tr><td>AutomationSetting</td><td>读写</td><td>用户/UI</td><td>A01</td><td>提交前</td><td>语义未知</td><td>控件【已确认】；作用【未知】</td><td class="evidence">S01–S02</td></tr>
+<tr><td>Reference/Subject/Skill</td><td>可选写→读</td><td>用户</td><td>A01/工具</td><td>提交前</td><td>移除后应使计划失效</td><td>入口【已确认】；本次值【未观察】</td><td class="evidence">S01</td></tr>
+<tr><td>GenerationPlan</td><td>写→读</td><td>A01</td><td>用户、视频工具</td><td>规划结束</td><td>原始需求变更后应重做</td><td>【已确认】文字结果</td><td class="evidence">S03</td></tr>
+<tr><td>UserConfirmation</td><td>等待写入</td><td>用户</td><td>A01/视频工具</td><td>取消或全部生成</td><td>必须绑定计划版本</td><td>确认入口【已确认】</td><td class="evidence">S03</td></tr>
+<tr><td>CreditContext</td><td>可能读写</td><td>账户/计费</td><td>确认门/生成工具</td><td>调用前后</td><td>预占/扣减/释放未知</td><td>余额与提示【已确认】；协议【未知】</td><td class="evidence">S01、S03</td></tr>
+<tr><td>GenerationTask/AssetVersion</td><td>应写</td><td>视频工具</td><td>预览、资产、画布</td><td>确认后</td><td>未观察</td><td>【未知】</td><td>超出截图</td></tr>
+</tbody></table></div>
+<h3 style="margin-top:18px">状态表面一致性</h3>
+<div class="scroll"><table><thead><tr><th>逻辑事实</th><th>Agent 文案</th><th>任务卡</th><th>积分</th><th>资产/画布</th><th>冲突</th><th>结论</th></tr></thead><tbody>
+<tr><td>规划是否完成</td><td>“已完成”</td><td>1 条方案存在</td><td>本次消耗 0</td><td>无视频</td><td>无</td><td>规划完成【已确认】</td></tr>
+<tr><td>视频是否生成</td><td>“接下来会调用”</td><td>等待“全部生成”</td><td>将消耗一定积分</td><td>无视频</td><td>“已完成”标题容易误导</td><td>生成未确认</td></tr>
+<tr><td>实际费用</td><td>“一定积分”</td><td>未列单价</td><td>规划阶段 0</td><td>—</td><td>未来费用与当前费用混在同一屏</td><td>准确金额未知</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="knowledge"><h2>8. 技能、知识与公共/私有资产</h2>
+<div class="grid g3"><div class="card"><h3>技能目录</h3><p>【已确认】页面提供“使用技能”和“技能”发现入口；是否由用户选定或由“自动”路由、技能是否版本化均未知。</p></div><div class="card"><h3>主体与参考</h3><p>【已确认】支持“@ 添加主体”和上传参考。主体是否来自用户资产、是否稳定复用、素材如何授权和删除均未知。</p></div><div class="card"><h3>创作知识</h3><p>【合理推断】方案扩写使用了暗黑奇幻场景与视频描述知识；知识库、Prompt 模板、安全与版权规则没有页面证据。</p></div></div>
+<div class="callout warn"><strong>隐私边界：</strong>上传入口只证明可提供参考，不证明文件已解析、存储、跨任务复用或可删除。真实保留期、授权和租户隔离均需官方规则或操作证据。</div>
+</section>
+
+<section id="models"><h2>9. 模型接入与路由</h2>
+<div class="scroll"><table><thead><tr><th>能力</th><th>可见名称</th><th>当前证据</th><th>本次任务是否调用</th><th>限制/未知</th></tr></thead><tbody>
+<tr><td>图片模型</td><td>图片 5.0 Pro</td><td>首页能力卡，文案“全场景效果提升”</td><td>没有证据</td><td>参数、价格、版本、路由未知</td></tr>
+<tr><td>视频插件/能力</td><td>白模视频渲染插件；适配 Seedance 2.5</td><td>首页能力卡</td><td>没有证据</td><td>“适配”不等于本次选用</td></tr>
+<tr><td>本次视频工具</td><td>页面只称“视频生成工具”</td><td>调用计划</td><td>尚未执行</td><td>模型、时长、比例、分辨率、费用均未知</td></tr>
+<tr><td>路由策略</td><td>“自动”</td><td>控件可见</td><td>可能参与，但作用不明</td><td>不能据此声称动态模型路由</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="selection"><h2>10. 底层能力选型（需求与建议，不冒充现状）</h2>
+<div class="scroll"><table><thead><tr><th>能力</th><th>必须行为</th><th>可能方案类别</th><th>建议设计</th><th>为何现状未知</th></tr></thead><tbody>
+<tr><td>意图与任务规划</td><td>识别媒体类型并形成可编辑计划</td><td>LLM + 结构化输出</td><td>计划绑定原始需求与版本；展示关键参数</td><td>仅看到自然语言摘要</td></tr>
+<tr><td>技能/模型路由</td><td>依据任务、参考、成本和能力选择工具</td><td>规则 + 能力目录 + 路由器</td><td>展示选用理由、替代项与价格</td><td>“自动”没有解释</td></tr>
+<tr><td>异步任务</td><td>可跟踪、取消、重试、恢复</td><td>任务队列/事件流</td><td>run_id、checkpoint、cancel token、幂等键</td><td>未见生成中页面</td></tr>
+<tr><td>计费</td><td>调用前报价，成功后结算，失败可释放</td><td>额度预占/账本</td><td>精确预估 + 实际明细 + 重试去重</td><td>只见模糊积分提示</td></tr>
+<tr><td>媒体与资产</td><td>持久化、可播放、可追溯</td><td>对象存储 + 元数据/版本</td><td>logical_asset_id + immutable_version + lineage</td><td>本轮无结果资产</td></tr>
+<tr><td>质量与安全</td><td>检查可播放、时长、风格、内容安全</td><td>媒体探测 + 多模态评估 + policy</td><td>质量报告和未满足项随结果展示</td><td>未见验证面</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="entities"><h2>11. 逻辑实体与关系</h2>
+<p class="muted">实体名是分析设计；UserRequest、GenerationPlan 和 Confirmation 有页面支持，Run、ToolCall、AssetVersion、BillingRecord 仍属推断/建议。</p>
+<div class="diagram"><pre class="mermaid">erDiagram
+USER ||--o{ USER_REQUEST : submits
+USER_REQUEST ||--o| GENERATION_PLAN : produces
+GENERATION_PLAN ||--o{ PLAN_ITEM : contains
+GENERATION_PLAN ||--o| USER_CONFIRMATION : awaits
+USER_CONFIRMATION ||--o| GENERATION_RUN : authorizes
+GENERATION_RUN ||--o{ TOOL_CALL : invokes
+TOOL_CALL ||--o{ ASSET_VERSION : creates
+GENERATION_RUN ||--o| BILLING_RECORD : settles
+ASSET_VERSION }o--o| CANVAS_NODE : referenced_by
+USER_REQUEST { string original_text }
+GENERATION_PLAN { string status string version }
+PLAN_ITEM { string media_type string expanded_prompt boolean selected }
+USER_CONFIRMATION { string decision string plan_version }
+GENERATION_RUN { string run_id string state }
+ASSET_VERSION { string asset_id string version string media_url }</pre></div>
+</section>
+
+<section id="sequence"><h2>12. 当前可还原的端到端时序</h2>
+<div class="diagram"><pre class="mermaid">sequenceDiagram
+actor U as 用户
+participant UI as 即梦界面
+participant A as Agent 模式
+participant C as 积分/确认门
+participant V as 视频生成工具
+participant X as 资产/画布
+U->>UI: 选择 Agent 模式 [S01]
+U->>UI: 输入暗黑巨龙视频需求 [S02]
+UI->>A: 提交原始需求
+A-->>UI: 规划摘要 + 1 条扩写方案 [S03]
+UI-->>U: 显示“取消 / 全部生成”与积分提示 [S03]
+alt 用户取消
+  U->>UI: 取消
+  UI-->>A: 中断在工具调用前
+else 用户继续（未观察）
+  U->>UI: 全部生成
+  UI->>C: 检查/确认额度（推断）
+  alt 余额充足
+    C-->>A: 允许执行（未知）
+    A->>V: 提交视频任务（仅计划）
+    V-->>X: 视频资产/画布写入（未知）
+  else 余额不足
+    C-->>U: 补充积分/调整方案（未知）
+  end
+end</pre></div>
+</section>
+
+<section id="panorama"><h2>13. 产品全景架构</h2>
+<div class="diagram"><pre class="mermaid">flowchart TB
+classDef fact fill:#dff8eb,stroke:#249a63,color:#102017
+classDef infer fill:#fff0d7,stroke:#c88624,color:#2b1b04,stroke-dasharray:5 3
+classDef design fill:#e8eaff,stroke:#6673c7,color:#161a3a,stroke-dasharray:7 4
+classDef unknown fill:#ececef,stroke:#888,color:#222,stroke-dasharray:3 3
+subgraph CH[用户与交互]
+U[创作者]:::fact --> UI[Agent 模式统一输入]:::fact
+UI --> REF[上传 / @主体 / 技能]:::fact
+UI --> CONF[方案卡与积分确认门]:::fact
+end
+subgraph AG[Agent 与编排]
+A[公开 Agent 模式]:::fact
+INTENT[意图识别与任务规划]:::infer
+ROUTE[技能/模型路由]:::infer
+STATE[运行状态协调器]:::design
+A --> INTENT --> ROUTE --> STATE
+end
+subgraph AP[应用与工具]
+IMG[图片生成]:::fact
+VID[视频生成工具]:::fact
+MUS[音乐/配音]:::fact
+DIGI[数字人/动作模仿]:::fact
+VALID[媒体质量验证]:::design
+end
+subgraph DATA[上下文与资产]
+REQ[原始需求]:::fact
+PLAN[生成计划]:::fact
+RUN[GenerationRun]:::design
+ASSET[AssetVersion / Lineage]:::design
+BILL[积分账本]:::infer
+CANVAS[资产 / 画布]:::fact
+end
+subgraph GOV[基础设施与治理]
+TASK[异步任务 / 取消 / 幂等]:::design
+SAFE[安全 / 版权 / 隐私]:::design
+TRACE[追踪 / 对账 / 评估]:::design
+end
+UI --> A
+REQ --> A
+A --> PLAN
+PLAN --> CONF
+CONF -.用户确认.-> ROUTE
+ROUTE -.计划调用.-> VID
+VID -.未验证结果.-> ASSET
+ASSET --> CANVAS
+RUN --> BILL
+STATE --> TASK
+VID --> VALID
+VALID --> TRACE
+SAFE --> VID</pre></div>
+</section>
+
+<section id="asis"><h2>14. As-Is：当前可证实的产品形态</h2>
+<div class="grid g2"><div class="card"><h3>已证实</h3><ul><li>Agent 模式与六类直接创作模式并列。</li><li>输入支持文本/剧本/参考提示，并暴露技能与主体入口。</li><li>Agent 将用户一句话扩展为一个待生成视频方案。</li><li>视频生成前存在积分提示与取消/全部生成确认门。</li><li>规划阶段显示 0 积分，实际生成成本未在截图中量化。</li></ul></div><div class="card warn"><h3>证据边界</h3><ul><li>没有证据证明视频生成工具已调用。</li><li>没有最终视频、预览、资产或画布状态。</li><li>没有模型选择、参数、生成耗时或扣费明细。</li><li>没有失败、余额不足、生成中取消或重试界面。</li><li>没有看到方案的编辑、备选方案或版本历史。</li></ul></div></div>
+</section>
+
+<section id="tobe"><h2>15. To-Be：如果做同类产品的机会点</h2>
+<div class="grid g3"><div class="card"><h3>1. 计划先可编辑</h3><p>把 Agent 扩写结果拆成风格、主体、环境、镜头、时长、比例、模型和参考等字段；允许局部修改，不必取消重来。</p></div><div class="card"><h3>2. 精确报价</h3><p>确认前显示预计积分、模型、时长、分辨率和失败退款规则；规划 0 分与生成费用分开展示。</p></div><div class="card"><h3>3. 自动要可解释</h3><p>显示为什么选择视频工具、技能与模型，并给出成本优先/质量优先/速度优先替代方案。</p></div><div class="card"><h3>4. 完成门统一</h3><p>“规划完成”“生成完成”“资产写入完成”使用不同状态；避免一个“已完成”覆盖多个阶段。</p></div><div class="card"><h3>5. 失败可恢复</h3><p>任务级取消、断点续跑、幂等重试、额度预占与释放；让用户知道失败是否扣费。</p></div><div class="card"><h3>6. 结果带证据</h3><p>交付时附模型、参数、费用、引用素材、质量检查和未满足项，并同步到资产/画布。</p></div></div>
+</section>
+
+<section id="risks"><h2>16. 最值得讨论的体验与架构风险</h2>
+<div class="scroll"><table><thead><tr><th>优先级</th><th>问题</th><th>证据</th><th>用户影响</th><th>建议控制</th></tr></thead><tbody>
+<tr><td>P0</td><td>“已完成”与“尚未调用视频工具”共存</td><td class="evidence">S03</td><td>用户可能误以为成片完成，实际仍需确认</td><td>分离 planned / awaiting_confirm / executing / completed</td></tr>
+<tr><td>P0</td><td>确认前没有精确积分报价</td><td class="evidence">S03</td><td>无法评估继续成本；余额不足路径不透明</td><td>预估明细、额度预占、失败释放与账单回读</td></tr>
+<tr><td>P1</td><td>扩写方案不可见地改变了用户输入</td><td class="evidence">S02→S03</td><td>补全有价值，但可能引入用户不想要的风格/镜头</td><td>原始需求与 Agent 补全分栏、差异高亮、字段级编辑</td></tr>
+<tr><td>P1</td><td>“自动”缺少可解释范围</td><td class="evidence">S01–S02</td><td>用户不知道系统会选技能、模型还是参数</td><td>路由解释、替代方案和偏好开关</td></tr>
+<tr><td>P1</td><td>生成、资产和画布的一致性未知</td><td class="evidence">S01、S03</td><td>可能出现聊天称完成但资产未落库</td><td>Manifest 完成门、资产回读、统一状态源</td></tr>
+<tr><td>P2</td><td>参考与主体的隐私/血缘不透明</td><td class="evidence">S01</td><td>复用便利与授权风险并存</td><td>保留期、删除、来源、派生关系和租户隔离</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="trace"><h2>17. 规则—证据追溯</h2>
+<div class="filters"><button type="button" data-filter="all">全部</button><button type="button" data-filter="confirmed">已确认</button><button type="button" data-filter="inferred">合理推断</button><button type="button" data-filter="design">建议设计</button><button type="button" data-filter="unknown">未知</button></div>
+<div class="scroll" style="margin-top:10px"><table><thead><tr><th>ID</th><th>结论/组件</th><th>等级</th><th>证据</th><th>限制</th></tr></thead><tbody>
+<tr class="trace-row" data-status="confirmed"><td>TR01</td><td>Agent 模式是一个公开创作入口</td><td>【已确认】</td><td class="evidence">S01–S02、O01</td><td>不代表一个固定后端 Agent 实例</td></tr>
+<tr class="trace-row" data-status="confirmed"><td>TR02</td><td>用户提交了暗黑巨龙视频需求</td><td>【已确认】</td><td class="evidence">S02</td><td>未见参考素材</td></tr>
+<tr class="trace-row" data-status="confirmed"><td>TR03</td><td>Agent 产生了 1 条更详细的视频方案</td><td>【已确认】</td><td class="evidence">S03</td><td>不等于视频资产</td></tr>
+<tr class="trace-row" data-status="confirmed"><td>TR04</td><td>视频工具调用前有积分确认门</td><td>【已确认】</td><td class="evidence">S03</td><td>精确费用未知</td></tr>
+<tr class="trace-row" data-status="confirmed"><td>TR05</td><td>视频生成工具尚未被执行证据确认</td><td>【已确认】范围结论</td><td class="evidence">S03“接下来会调用”</td><td>后续截图可能改变结论</td></tr>
+<tr class="trace-row" data-status="inferred"><td>TR06</td><td>“自动”可能参与技能/模型/参数路由</td><td>【合理推断】</td><td class="evidence">S01–S03</td><td>具体作用未公开</td></tr>
+<tr class="trace-row" data-status="inferred"><td>TR07</td><td>方案卡可能对应结构化生成任务</td><td>【合理推断】</td><td class="evidence">S03</td><td>字段与稳定 ID 未见</td></tr>
+<tr class="trace-row" data-status="design"><td>TR08</td><td>引入 plan_version、run_id、asset_version</td><td>【建议设计】</td><td>解决确认、重试与状态冲突</td><td>不声称现有实现</td></tr>
+<tr class="trace-row" data-status="unknown"><td>TR09</td><td>最终模型、积分、视频、画布与失败策略</td><td>【未知】</td><td class="evidence">S01–S03 未覆盖</td><td>需继续生成后的页面证据</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="unknowns"><h2>18. 仍然无法确认与下一轮补证</h2>
+<div class="grid g2"><div class="card warn"><h3>当前未知</h3><ul><li>Agent 模式背后的真实 Agent 数量、名称和交接。</li><li>“自动”会选择哪些技能、模型和参数。</li><li>视频生成工具的模型、时长、比例、分辨率与精确积分。</li><li>余额不足、安全拦截、工具失败和用户中断后的状态。</li><li>生成成功后聊天、任务、资产、画布和预览是否一致。</li><li>用户纠偏是局部重做、全量重做还是新版本。</li><li>参考素材与主体的保存、删除、授权和复用规则。</li></ul></div><div class="card"><h3>最值得补的 5 组截图</h3><ol><li>点击“全部生成”后的任务状态、预计积分与模型参数。</li><li>生成成功后的实际视频卡、播放、下载和编辑入口。</li><li>资产与画布中是否同步出现同一视频及其版本。</li><li>一次局部修改后的新旧任务、费用与资产失效关系。</li><li>生成失败、积分不足、安全拦截和生成中取消页面。</li></ol></div></div>
+<div class="callout"><strong>停止边界：</strong>本报告没有调用即梦生成、没有点击“全部生成”、没有消费积分，也没有尝试还原隐藏思维链、官方 System Prompt、内部 API 或数据库实现。</div>
+</section>
+
+<div class="footer">即梦 Agent 模式产品拆解 · Evidence S01–S03 / O01 · generated with reverse-ai-product-architecture</div>
+</main></div>
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'base',securityLevel:'loose'});</script>
+<script>(()=>{document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{const f=btn.dataset.filter;document.querySelectorAll('[data-status]').forEach(row=>row.hidden=f!=='all'&&row.dataset.status!==f)}))})();</script>
+</body></html>

@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>钓鱼天气预报 App｜用户旅程、Agent 契约与产品全景架构</title>
+  <style>
+    :root{--bg:#07111f;--panel:#0f1e31;--panel2:#14263c;--line:#27415e;--text:#edf5ff;--muted:#94a8be;--cyan:#41c7e8;--blue:#5797ff;--gold:#f2c55a;--green:#55d6a4;--red:#ff7a7a;--purple:#b292ff;--shadow:0 18px 48px rgba(0,0,0,.28)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 20% 0,#102c47 0,transparent 30%),var(--bg);color:var(--text);font:15px/1.68 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+    a{color:var(--cyan);text-decoration:none}.wrap{max-width:1480px;margin:auto;padding:24px}.hero{padding:58px 0 34px;border-bottom:1px solid var(--line)}
+    .eyebrow{color:var(--cyan);font-weight:700;letter-spacing:.14em}.hero h1{font-size:clamp(32px,5vw,68px);line-height:1.08;margin:12px 0 16px;max-width:1100px}.hero p{color:var(--muted);font-size:18px;max-width:980px}.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+    .chip,.tag{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 11px;background:#0b1929;color:#c9d9ea;font-size:13px}.tag.fact{border-color:#227962;color:#7ce6bb}.tag.infer{border-color:#8b7228;color:#f4cf66}.tag.design{border-color:#6950a6;color:#c8b4ff}.tag.unknown{border-color:#7f4550;color:#ff9aa7}
+    nav{position:sticky;top:0;z-index:20;background:rgba(7,17,31,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);overflow:auto;white-space:nowrap}nav .wrap{padding-top:10px;padding-bottom:10px}nav a{display:inline-block;margin-right:18px;color:#b7c8da;font-size:13px}
+    section{padding:44px 0;border-bottom:1px solid rgba(39,65,94,.65)}h2{font-size:30px;margin:0 0 10px}h3{font-size:21px;margin:28px 0 12px}h4{font-size:16px;margin:18px 0 8px;color:#d7e7f7}.lead{color:var(--muted);max-width:1060px}.grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .card{background:linear-gradient(145deg,rgba(20,38,60,.95),rgba(11,25,41,.95));border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}.card h3,.card h4{margin-top:0}.kpi{font-size:30px;font-weight:800;color:var(--cyan)}.muted{color:var(--muted)}.warn{border-left:4px solid var(--red)}.gold{border-left:4px solid var(--gold)}.good{border-left:4px solid var(--green)}
+    table{width:100%;border-collapse:separate;border-spacing:0;background:#0b1929;border:1px solid var(--line);border-radius:14px;overflow:hidden}th,td{text-align:left;vertical-align:top;padding:12px 13px;border-bottom:1px solid #20374f}th{position:sticky;top:43px;background:#162a41;color:#d8e7f6;font-size:13px}tr:last-child td{border-bottom:0}.scroll{overflow:auto;border-radius:14px}.evidence{color:#94dcf2;font-size:12px}.quote{color:#f5f9ff}.small{font-size:12px}
+    .journey{display:grid;grid-template-columns:140px repeat(8,minmax(150px,1fr));gap:8px;overflow:auto;padding-bottom:8px}.lane{display:contents}.lane-label{position:sticky;left:0;z-index:2;background:#162a41;border:1px solid var(--line);border-radius:12px;padding:14px;font-weight:800}.node{min-height:142px;background:#102239;border:1px solid var(--line);border-radius:12px;padding:12px;position:relative}.node:not(:last-child):after{content:"→";position:absolute;right:-9px;top:48%;z-index:2;color:var(--cyan);font-weight:900}.node b{display:block;margin-bottom:5px}.decision{border-color:#927731;background:#261f10}.fail{border-color:#874653;background:#2a171d}
+    .agent-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.io{display:grid;grid-template-columns:1fr 1fr;gap:16px}.io ul{margin:6px 0;padding-left:18px}.boundary{border:1px dashed var(--purple);padding:14px;border-radius:12px;background:rgba(178,146,255,.07)}
+    .arch{display:grid;gap:10px}.layer{display:grid;grid-template-columns:160px 1fr;gap:12px;align-items:stretch}.layer-title{background:#17304a;border:1px solid #315777;border-radius:12px;padding:14px;font-weight:800}.layer-body{display:flex;flex-wrap:wrap;gap:9px;background:#0b1929;border:1px solid var(--line);border-radius:12px;padding:12px}.box{padding:9px 12px;border:1px solid #31536f;background:#12263c;border-radius:10px}.box.infer{border-style:dashed;border-color:#9d832e}.box.design{border-style:dashed;border-color:#785daf;color:#d3c2ff}
+    .shots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.shot{background:#0b1929;border:1px solid var(--line);border-radius:14px;overflow:hidden}.shot img{display:block;width:100%;aspect-ratio:9/19.5;object-fit:cover;object-position:top}.shot figcaption{padding:12px;color:#bed0e3}.diagram{background:#f8fbff;color:#142033;border-radius:16px;padding:18px;overflow:auto}.mermaid{min-width:900px}.callout{padding:16px 18px;border-radius:12px;background:#101f32;border:1px solid var(--line);margin:12px 0}.callout strong{color:var(--gold)}
+    details{border:1px solid var(--line);border-radius:12px;background:#0b1929;margin:10px 0}summary{cursor:pointer;padding:14px 16px;font-weight:750}details>div{padding:0 16px 16px}.footer{padding:36px 0;color:var(--muted)}
+    @media(max-width:900px){.g2,.g3,.g4,.io,.shots{grid-template-columns:1fr}.layer{grid-template-columns:1fr}.wrap{padding-left:16px;padding-right:16px}.hero{padding-top:36px}th{top:41px}.journey{grid-template-columns:110px repeat(8,160px)}}
+    @media print{nav{display:none}body{background:#fff;color:#111}.card,table,.callout,details,.node,.layer-body{box-shadow:none;background:#fff;color:#111}.muted,.lead{color:#555}section{break-inside:avoid}.wrap{max-width:none}}
+  </style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">EVIDENCE-BASED PRODUCT REVERSE ENGINEERING</div>
+    <h1>钓鱼天气预报 App<br>用户旅程、Agent 契约与产品全景架构</h1>
+    <p>基于 9 张连续截图进行只读取证。页面标题为“钓鱼天气预报”；本文不假定它是正式产品名，也不把营销文案中的 “AI” 自动等同于独立 Agent。</p>
+    <div class="meta"><span class="chip">证据 S01–S09</span><span class="chip">时间 07:15–07:18</span><span class="chip">移动端截图</span><span class="chip">生成日期 2026-08-18</span></div>
+  </div></header>
+  <nav><div class="wrap"><a href="#summary">结论</a><a href="#scope">范围</a><a href="#evidence">证据</a><a href="#journey">用户旅程</a><a href="#agents">Agent 契约</a><a href="#tools">工具</a><a href="#context">上下文</a><a href="#flow">数据流</a><a href="#architecture">全景架构</a><a href="#opportunities">机会点</a><a href="#unknowns">待验证</a></div></nav>
+  <main class="wrap">
+
+  <section id="summary">
+    <h2>0. 一页结论</h2><p class="lead">这是一个以天气与鱼情指数为入口、用鱼种/钓法/日期/时段约束地理空间搜索，并通过会员权益变现的钓鱼决策产品。截图能确认一个阶段化的 “AI 找钓点” 功能流程，但不能确认存在多个自治 Agent。</p>
+    <div class="grid g4">
+      <div class="card good"><div class="kpi">8</div><b>可观察旅程阶段</b><p class="muted">从查看天气到候选钓点与会员页。</p></div>
+      <div class="card gold"><div class="kpi">0</div><b>已确认命名 Agent</b><p class="muted">页面没有角色名、交接者或对话式 Agent。</p></div>
+      <div class="card"><div class="kpi">1</div><b>可推断功能执行体</b><p class="muted">“AI 找钓点分析器”（功能命名，非官方 Agent 名）。</p></div>
+      <div class="card warn"><div class="kpi">2</div><b>关键证据冲突</b><p class="muted">地点不一致；免费预览/AI/VIP 状态不一致。</p></div>
+    </div>
+    <div class="callout"><strong>架构判断：</strong>现有证据更支持“状态化分析工作流 + 多数据服务 + 会员门控”，而非“多 Agent 协作系统”。`AI·v3` 只证明页面展示了一个版本标签，不证明模型类型、供应商或路由机制。</div>
+  </section>
+
+  <section id="scope">
+    <h2>1. 查看范围与证据边界</h2>
+    <div class="grid g2">
+      <div class="card"><h3>已查看</h3><ul><li>首页天气、预警、鱼情分与黄金时段（S01）</li><li>钓法/鱼种切换与 VIP 锁定选项（S02）</li><li>逐小时钓鱼指数与功能入口（S03）</li><li>AI 找钓点配置、分析因子、执行进度与候选结果（S04–S07）</li><li>会员状态、价格、权益、协议与恢复订单入口（S08–S09）</li></ul></div>
+      <div class="card warn"><h3>无法确认</h3><ul><li>截图是否来自同一个连续会话、同一账号、同一地图视野。</li><li>按钮背后的真实 API、模型、Prompt、数据库和供应商。</li><li>候选点是否可达、合规、安全，评分是否真实有效。</li><li>失败、重试、网络中断、用户取消、扣费成功/失败后的行为。</li><li>“AI 钓况智能解读”和“AI 出钓提醒”的实际执行记录。</li></ul></div>
+    </div>
+    <h3>证据等级</h3><div class="meta"><span class="tag fact">【已确认】页面直接可见</span><span class="tag infer">【合理推断】多条事实支持</span><span class="tag design">【建议设计】面向同类产品</span><span class="tag unknown">【未知】证据不足</span></div>
+    <div class="callout warn"><strong>冲突 C01｜地理上下文：</strong>S01–S05 显示“武汉市·大吕湾”，S06 出现与该地点不一致的坐标画面，S07 又出现“通惠河”等地名。【已确认】页面呈现冲突；【未知】是测试数据、截图跨会话、地图切换还是产品错误。</div>
+    <div class="callout warn"><strong>冲突 C02｜免费与会员门控：</strong>S05 写明“免费预览只判断当前视野是否值得分析，不调用 AI；会员解锁具体岸段坐标、评分依据和导航”，但 S06 展示 `AI·v3`、分析阶段和评分，S07 展示 3 个候选点，而 S08 仍显示“未开通”。【未知】是否为免费体验、演示流程、权益临时开放或状态不同步。</div>
+  </section>
+
+  <section id="evidence">
+    <h2>2. 截图证据索引</h2><p class="lead">编号按截图时间排序。图像仅用于本地报告展示；精确坐标与用户头像不在文字中复述。</p>
+    <div class="shots">
+      <figure class="shot"><img src="web-assets/fishing/S01.jpg" alt="S01 首页"><figcaption><b>S01｜07:15 首页</b><br>“武汉市·大吕湾”“74分 有口”“黄金时段 17:00–19:00”“AI找钓点”。</figcaption></figure>
+      <figure class="shot"><img src="web-assets/fishing/S02.jpg" alt="S02 鱼种切换"><figcaption><b>S02｜07:16 切换目标鱼种</b><br>“切换后将按所选钓法与鱼种重算指数”；路亚/翘嘴鲌；多项 VIP 锁定。</figcaption></figure>
+      <figure class="shot"><img src="web-assets/fishing/S03.jpg" alt="S03 指数页"><figcaption><b>S03｜07:16 逐小时指数</b><br>路亚·翘嘴鲌；00–06 时天气、水温、风等指标；入口“AI找钓点”。</figcaption></figure>
+      <figure class="shot"><img src="web-assets/fishing/S04.jpg" alt="S04 AI找钓点配置"><figcaption><b>S04｜07:17 参数配置</b><br>“按鱼种、日期、时段分析当前视野”；今天、夜钓被选中；“开始分析”。</figcaption></figure>
+      <figure class="shot"><img src="web-assets/fishing/S05.jpg" alt="S05 分析因子与付费说明"><figcaption><b>S05｜07:17 分析范围</b><br>天气、水温、溶氧、岸线、卫星图等 11 类因子；免费预览/会员说明。</figcaption></figure>
+      <figure class="shot"><img src="web-assets/fishing/S06.jpg" alt="S06 分析中"><figcaption><b>S06｜07:17 分析中</b><br>`AI·v3`、`GIS·L14`、“已评估23段”“候选3/12”“评分87/100”。</figcaption></figure>
+      <figure class="shot"><img src="web-assets/fishing/S07.jpg" alt="S07 候选点结果"><figcaption><b>S07｜07:17 结果地图</b><br>“已为你找到3个候选钓点”；地图显示评分标记与“通惠河”等地名。</figcaption></figure>
+      <figure class="shot"><img src="web-assets/fishing/S08.jpg" alt="S08 会员价格"><figcaption><b>S08｜07:18 会员中心</b><br>状态“未开通”；月/年/永久方案；年费 ¥68；“恢复订单”。</figcaption></figure>
+      <figure class="shot"><img src="web-assets/fishing/S09.jpg" alt="S09 会员权益"><figcaption><b>S09｜07:18 会员权益</b><br>15 日预测、AI 解读、提醒、免广告、历史影像、客服等。</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="journey">
+    <h2>3. 用户旅程证据表</h2>
+    <div class="scroll"><table><thead><tr><th>ID / 阶段</th><th>用户目标</th><th>用户动作</th><th>页面反馈</th><th>需要决定</th><th>状态/资产变化</th><th>情绪、阻力</th><th>证据</th></tr></thead><tbody>
+      <tr><td>J01 查看概况</td><td>判断今天是否适合出钓</td><td>进入天气首页</td><td>74 分“有口”、高温黄色预警、黄金时段、天气指标和建议</td><td>继续看指数、找钓点或离开</td><td>只读展示；是否已记录位置未知</td><td>信息集中但首屏较拥挤；分数带来信心，预警带来谨慎</td><td class="evidence">S01：“74分 有口”“高温黄色预警”“17:00–19:00”</td></tr>
+      <tr><td>J02 改目标</td><td>把默认台钓/鲫鱼改成路亚目标</td><td>打开“切换目标鱼种”，选路亚与翘嘴鲌，点“确定”</td><td>提示“切换后…重算指数”；展示鱼种习性；多数鱼种有 VIP 锁</td><td>选择钓法、鱼种；是否付费解锁</td><td>当前查询条件由台钓/鲫鱼变为路亚/翘嘴鲌；指数重算被文案声明</td><td>可控感提升；锁定项增加选择挫败</td><td class="evidence">S01 默认“台钓｜鲫鱼”；S02 选中“路亚”“翘嘴鲌”“确定”</td></tr>
+      <tr><td>J03 看逐时指数</td><td>找到更具体的作钓窗口</td><td>进入“钓鱼指数”页，查看逐小时表</td><td>逐小时天气、温度、风、水温、光照、指数；未来日期部分锁定</td><td>选日期/鱼种，或进入“AI找钓点”</td><td>页面查询条件保持路亚/翘嘴鲌</td><td>数据充足但解释成本高；未来信息受限</td><td class="evidence">S03：“路亚·翘嘴鲌逐小时钓鱼指数”“AI找钓点”</td></tr>
+      <tr><td>J04 配置找点</td><td>把泛化指数转为具体钓位</td><td>点“AI找钓点”，选今天、夜钓或全天选项</td><td>底部表单说明“按鱼种、日期、时段分析当前视野”</td><td>目标鱼、日期、时段；开始或关闭</td><td>形成一组待分析参数；历史图标可见但内容未知</td><td>结构化输入清晰；“当前视野”边界不够显眼</td><td class="evidence">S04：翘嘴鲌/路亚、今天、夜钓、开始分析、关闭 X</td></tr>
+      <tr><td>J05 理解分析与权益</td><td>确认系统会看什么、是否要付费</td><td>向下查看“本次将分析”</td><td>列出 11 类因子；说明免费预览不调用 AI，会员解锁坐标/评分/导航</td><td>开始分析或升级 VIP</td><td>尚未证明调用发生</td><td>因子增强可信度；免费与会员边界后续发生冲突</td><td class="evidence">S05：分析因子 chips、免费预览说明、“升级VIP”</td></tr>
+      <tr><td>J06 等待分析</td><td>获得候选岸段</td><td>点“开始分析”（由相邻画面合理推断）</td><td>4 阶段进度、评估段数、候选数、评分、地图覆盖层</td><td>页面未显示用户判断；可能可离开/关闭但取消语义未知</td><td>执行状态进入“钓位 04/04”；产生候选 3/12 与 87/100 摘要</td><td>过程可视化降低等待焦虑；地点冲突严重伤害信任</td><td class="evidence">S04/S05 按钮；S06：“已评估23段”“筛选钓位04/04”</td></tr>
+      <tr><td>J07 查看结果</td><td>在地图上选择钓点</td><td>查看 3 个候选标记</td><td>Toast“已为你找到3个候选钓点”，地图标记分数</td><td>选哪个点、是否导航；页面未展示详情选择动作</td><td>结果图层新增候选点；是否保存历史未知</td><td>结果直观；缺少评分解释、可达性与安全确认；地点不一致</td><td class="evidence">S07：3 个候选、评分标记、“通惠河”等地名</td></tr>
+      <tr><td>J08 评估付费</td><td>解锁未来预测与 AI 权益</td><td>进入会员中心，浏览方案与权益</td><td>未开通；月/年/永久价格，年费默认突出；协议、恢复订单</td><td>购买哪个方案、是否自动续费、返回</td><td>截图中未发生支付；会员状态仍“未开通”</td><td>价格明确；免费体验与付费权益关系不清，自动续费需高度透明</td><td class="evidence">S08–S09：“未开通”“立即开通·¥68.0”“恢复订单”</td></tr>
+    </tbody></table></div>
+
+    <h3>三泳道用户旅程图</h3>
+    <div class="journey" aria-label="用户旅程三泳道">
+      <div class="lane"><div class="lane-label">用户</div><div class="node"><b>判断今天是否出钓</b>查看概况<br><span class="evidence">S01 / J01</span></div><div class="node decision"><b>鱼种/钓法满意？</b>否：切换<br>是：继续<br><span class="evidence">S01–S02 / J02</span></div><div class="node"><b>寻找最佳时段</b>查看逐小时指数<br><span class="evidence">S03 / J03</span></div><div class="node"><b>寻找具体钓位</b>进入 AI 找钓点<br><span class="evidence">S03–S04 / J04</span></div><div class="node decision"><b>参数确认？</b>选日期/时段后开始；可关闭<br><span class="evidence">S04 / J05</span></div><div class="node decision"><b>继续 / 中断？</b>进度中未展示取消；返回能力未知<br><span class="evidence">S06 / J06</span></div><div class="node decision"><b>结果可信？</b>选点或重新修改；页面未展示反馈入口<br><span class="evidence">S07 / J07</span></div><div class="node decision"><b>免费 / 付费？</b>升级、恢复订单或返回<br><span class="evidence">S08–S09 / J08</span></div></div>
+      <div class="lane"><div class="lane-label">产品界面</div><div class="node">天气、预警、74 分、黄金时段</div><div class="node">切换弹窗、VIP 锁、确定按钮</div><div class="node">逐时表、未来日期锁、AI 入口</div><div class="node">配置底板与地图视野</div><div class="node">11 类因子、免费说明、开始按钮</div><div class="node">四阶段进度、段数/候选/评分</div><div class="node fail">3 个标记，但地图地点与前文冲突</div><div class="node">会员方案、权益、协议、恢复订单</div></div>
+      <div class="lane"><div class="lane-label">系统结果</div><div class="node">生成/读取综合鱼情摘要<br><span class="tag infer">推断</span></div><div class="node">按新目标重算指数<br><span class="tag fact">文案确认</span></div><div class="node">返回小时级指数<br><span class="tag fact">结果可见</span></div><div class="node">建立 FishingQuery<br><span class="tag infer">语义对象</span></div><div class="node decision">权益充足？<br>免费预览 / VIP 深度结果<br><span class="tag unknown">实际门控冲突</span></div><div class="node decision">生成成功 / 失败<br>成功：候选结果<br>失败：处理未知</div><div class="node">候选 3/12 → 地图 3 点<br><span class="tag fact">可见结果</span></div><div class="node">支付未发生；状态仍未开通<br><span class="tag fact">S08</span></div></div>
+    </div>
+    <p class="small muted">修改/纠偏路径：鱼种、钓法、日期、时段均有可见入口；结果出来后是否能局部重跑、回退或反馈错误尚未确认。失败/中断路径：配置页可关闭，但执行中的取消、失败提示、重试和扣费保护均无截图证据。</p>
+  </section>
+
+  <section id="agents">
+    <h2>4. Agent 清单与 I/O 契约</h2>
+    <div class="callout"><strong>清单结论：</strong>【已确认】命名 Agent = 0。页面没有显示“天气 Agent / GIS Agent / 评分 Agent”等角色，也没有角色之间的消息或交接。【合理推断】可以把已观察到的阶段化能力抽象为 1 个功能执行体，以便做产品架构设计，但不能说它就是官方 Agent。</div>
+    <div class="scroll"><table><thead><tr><th>候选能力</th><th>证据等级</th><th>出现位置</th><th>是否形成契约</th><th>原因</th></tr></thead><tbody>
+      <tr><td>AI 找钓点分析器（功能命名，非官方名）</td><td><span class="tag infer">合理推断</span></td><td>S04–S07</td><td>是</td><td>存在结构化输入、显式开始、阶段进度、运行指标、候选结果，足以定义功能契约。</td></tr>
+      <tr><td>AI 钓况智能解读</td><td><span class="tag fact">功能名可见</span></td><td>S09</td><td>否</td><td>只有会员权益文案，没有输入、执行、输出记录。</td></tr>
+      <tr><td>AI 出钓提醒</td><td><span class="tag fact">功能名可见</span></td><td>S09</td><td>否</td><td>只有权益文案，未看到提醒设置或通知结果。</td></tr>
+      <tr><td>天气/鱼情评分器</td><td><span class="tag infer">合理推断</span></td><td>S01、S03</td><td>否</td><td>有分数和表格，但无法区分规则引擎、数据服务或 AI Agent。</td></tr>
+    </tbody></table></div>
+
+    <div class="card" style="margin-top:22px">
+      <div class="agent-head"><div><div class="eyebrow">FUNCTIONAL I/O CONTRACT</div><h3>AI 找钓点分析器</h3><p class="muted">功能命名，并非官方 Agent 名称</p></div><span class="tag infer">合理推断的执行体</span></div>
+      <div class="boundary"><b>能力边界</b>：负责把“鱼种 × 钓法 × 日期 × 时段 × 当前地图视野”与环境/地理因子结合，筛选并排序候选岸段。它不负责确认线下安全、合法垂钓、真实可达性，也没有证据表明它能购买会员、自动导航或与其他 Agent 对话。</div>
+      <div class="io">
+        <div><h4>1. 核心目标</h4><p>在当前地图视野内，为指定作钓目标输出可比较的候选钓点及分数。</p><h4>2. 触发条件</h4><ul><li>用户从指数页进入“AI找钓点”。</li><li>目标鱼种、钓法、日期、时段已选，用户点“开始分析”。</li><li>实际是否先做会员校验或免费预览，证据冲突。</li></ul><h4>3. 输入信息</h4><ul><li><b>用户当前输入：</b>翘嘴鲌、路亚、今天、夜钓 19:00–24:00；或全天最佳窗口；当前视野。【已确认 S04–S05】</li><li><b>用户长期信息：</b>会员状态“未开通”可见；历史任务是否读取未知。【S08；S04 历史图标】</li><li><b>项目/会话上下文：</b>首页位置、天气与当前钓法/鱼种；地图视野。【合理推断】</li><li><b>上游输出：</b>逐小时指数页的鱼种/钓法选择。【S02–S04】</li><li><b>公共信息：</b>天气、水温、风、溶氧、黄金/天文窗口、岸线、卫星图、鱼种习性、钓法适配、知识库。【S05 标签】</li><li><b>运行时结果：</b>评估段数、候选数、阶段、评分、地图候选。【S06–S07】</li></ul></div>
+        <div><h4>4. 可观察判断</h4><ul><li>选择岸段时结合“岸线结构、鱼种习性和到达性”排序。【已确认 S06 文案】</li><li>将 23 个已评估岸段缩减为候选，并展示 3/12、87/100。【已确认 S06】</li><li>免费预览是否只判断“值得分析”与深度 AI 分析门槛。【页面事实 + 运行冲突】</li><li>评分公式、因子权重、硬性排除规则、安全/合规检查。【未知】</li></ul><h4>5. 输出信息</h4><ul><li><b>用户回复：</b>无聊天回复证据；以 Toast 和状态文案为主。</li><li><b>页面组件：</b>四阶段进度、指标、候选地图标记。</li><li><b>结构化字段：</b>分析阶段、已评估段数、候选数、评分（字段名为推导设计）。</li><li><b>资产：</b>候选钓点图层；是否持久化为历史资产未知。</li><li><b>状态：</b>configuring → analyzing → result_visible。</li><li><b>下游任务：</b>候选详情/导航可能是下游，但截图未执行。</li></ul><h4>6. 完成条件</h4><p>页面出现“已为你找到3个候选钓点”且地图存在 3 个候选标记。【已确认 S07】结果正确性、位置一致性与可达性未通过证据验证。</p></div>
+      </div>
+      <h4>7. 全局上下文读写</h4>
+      <div class="scroll"><table><thead><tr><th>对象</th><th>读/写</th><th>生产者</th><th>消费者</th><th>时机</th><th>等级/证据</th></tr></thead><tbody>
+        <tr><td>FishingQuery：鱼种/钓法/日期/时段/地图视野</td><td>读</td><td>用户 + 页面表单</td><td>找点分析</td><td>开始分析前</td><td>【合理推断】S04–S05；对象名为设计命名</td></tr>
+        <tr><td>EntitlementContext</td><td>读</td><td>会员系统</td><td>门控/付费页</td><td>分析前或结果解锁时</td><td>【合理推断】S05、S08</td></tr>
+        <tr><td>EnvironmentSnapshot</td><td>读</td><td>天气/环境服务</td><td>评分与排序</td><td>执行中</td><td>【合理推断】S01、S03、S05</td></tr>
+        <tr><td>GeoAnalysisRun</td><td>写</td><td>找点分析</td><td>进度 UI、结果 UI</td><td>执行中</td><td>【合理推断】S06</td></tr>
+        <tr><td>CandidateSpot[]</td><td>写</td><td>找点分析</td><td>地图、候选详情/导航</td><td>完成时</td><td>【合理推断】S07</td></tr>
+        <tr><td>HistoryVersion</td><td>可能读写</td><td>未知</td><td>历史入口</td><td>未知</td><td>【未知】仅 S04 有历史图标</td></tr>
+      </tbody></table></div>
+      <h4>8. 异常与重试</h4><p>输入缺失、数据不可用、地图权限不足、网络失败、余额/次数不足、运行中取消、自动重试和幂等扣费均未展示。【未知】同类产品应在这些状态下阻止虚假“完成”，并保留上一次结果。</p>
+    </div>
+
+    <h3>推导状态机</h3>
+    <div class="diagram"><pre class="mermaid">stateDiagram-v2
+      [*] --> index_view: 查看指数 [S03]
+      index_view --> configuring: 点“AI找钓点” [S03-S04]
+      configuring --> configuring: 切换鱼种/日期/时段 [S04]
+      configuring --> closed: 点关闭 X [S04]
+      configuring --> entitlement_check: 点“开始分析” [S04-S05]
+      entitlement_check --> preview: 免费预览 [S05 文案]
+      entitlement_check --> paywall: 需要会员 [S05,S08]
+      entitlement_check --> analyzing: 允许分析 [S06]
+      preview --> paywall: 解锁坐标/评分/导航 [S05]
+      analyzing --> result_visible: 3 个候选点 [S07]
+      analyzing --> failed: 失败处理未知
+      analyzing --> interrupted: 中断处理未知
+      result_visible --> configuring: 修改参数重跑（建议）
+      paywall --> purchasing: 点“立即开通” [S08]
+      purchasing --> entitlement_check: 支付成功（未观察）
+      failed --> configuring: 重试（建议）
+    </pre></div>
+  </section>
+
+  <section id="tools">
+    <h2>5. 工具/能力总表</h2><p class="lead">以下均为功能性命名，并非官方工具名；“调用”只有在页面出现状态或结果时才判定为已发生。</p>
+    <div class="scroll"><table><thead><tr><th>ID</th><th>功能性名称</th><th>输入</th><th>可见结果</th><th>状态</th><th>证据</th></tr></thead><tbody>
+      <tr><td>T01</td><td>切换鱼种/钓法并重算指数</td><td>钓法、鱼种</td><td>选择状态及后续逐时指数</td><td>结果确认</td><td>S02 文案；S03 页面</td></tr>
+      <tr><td>T02</td><td>读取逐小时鱼情指数</td><td>位置、日期、钓法、鱼种</td><td>天气/温度/风/水温/光照/指数</td><td>结果确认；实现未知</td><td>S03</td></tr>
+      <tr><td>T03</td><td>创建找点分析请求</td><td>鱼种、钓法、日期、时段、当前视野</td><td>分析运行</td><td>合理推断</td><td>S04–S06</td></tr>
+      <tr><td>T04</td><td>检查会员权益/次数</td><td>用户权益、功能</td><td>锁定项、VIP 提示、会员页</td><td>合理推断</td><td>S02、S03、S05、S08</td></tr>
+      <tr><td>T05</td><td>加载天气与水环境特征</td><td>时空范围</td><td>分析因子与指标</td><td>输入标签确认；调用未知</td><td>S01、S03、S05</td></tr>
+      <tr><td>T06</td><td>加载 GIS/卫星/岸线特征</td><td>当前地图视野</td><td>GIS 层级、卫星面积、岸线长度</td><td>结果确认</td><td>S06</td></tr>
+      <tr><td>T07</td><td>岸段分割与评估</td><td>岸线与环境特征</td><td>“已评估23段”</td><td>结果确认</td><td>S06</td></tr>
+      <tr><td>T08</td><td>候选筛选与排序</td><td>岸线、鱼种习性、到达性</td><td>候选 3/12、评分 87/100</td><td>结果确认</td><td>S06</td></tr>
+      <tr><td>T09</td><td>渲染候选地图图层</td><td>候选点与分数</td><td>3 个候选标记</td><td>结果确认</td><td>S07</td></tr>
+      <tr><td>T10</td><td>免费预览“值得分析”检查</td><td>当前视野</td><td>应返回值得/不值得</td><td>仅文案，未看到结果</td><td>S05</td></tr>
+      <tr><td>T11</td><td>导航到候选点</td><td>候选位置</td><td>导航</td><td>未执行</td><td>S05 权益文案</td></tr>
+      <tr><td>T12</td><td>购买会员/恢复订单</td><td>方案、支付状态</td><td>权益变化</td><td>仅入口，未执行</td><td>S08–S09</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section id="context">
+    <h2>6. 全局上下文与核心实体</h2>
+    <div class="scroll"><table><thead><tr><th>上下文/实体</th><th>主要字段（语义命名）</th><th>来源</th><th>消费者</th><th>证据等级</th></tr></thead><tbody>
+      <tr><td>UserContext</td><td>界面位置、可能的位置权限、用户标识</td><td>系统/用户</td><td>天气、地图</td><td>位置显示已确认；权限与标识未知</td></tr>
+      <tr><td>EntitlementContext</td><td>member_status、plan、feature_access、usage_quota</td><td>会员系统</td><td>锁定、预览、支付</td><td>“未开通”与锁定项确认；字段名推导</td></tr>
+      <tr><td>FishingSelection</td><td>method、species</td><td>用户</td><td>指数、AI 找点</td><td>已确认 S02–S04</td></tr>
+      <tr><td>FishingQuery</td><td>date、time_window、all_day、map_viewport</td><td>用户/地图</td><td>找点分析</td><td>页面输入确认；对象名推导</td></tr>
+      <tr><td>WeatherSnapshot</td><td>alert、weather、temperature、pressure、wind、water_temperature、light</td><td>天气/环境服务</td><td>指数、评分</td><td>页面结果确认；生产链未知</td></tr>
+      <tr><td>FishingIndex</td><td>score、level、golden_window、hourly_series、advice</td><td>指数计算能力</td><td>首页/指数页/找点</td><td>结果确认；算法未知</td></tr>
+      <tr><td>GeoContext</td><td>viewport、map_layer、shoreline、satellite_frame、reachability</td><td>地图/GIS</td><td>找点分析</td><td>部分确认 S06；字段推导</td></tr>
+      <tr><td>FishKnowledge</td><td>species_habit、method_fit、environment_preference</td><td>知识库</td><td>指数与排序</td><td>页面标签/描述确认；存储未知</td></tr>
+      <tr><td>AnalysisRun</td><td>stage、evaluated_segments、candidate_count、summary_score</td><td>分析工作流</td><td>进度 UI</td><td>结果确认 S06；字段名推导</td></tr>
+      <tr><td>CandidateSpot</td><td>location_ref、rank、score、explanation、navigation_ref</td><td>排序能力</td><td>地图/详情/导航</td><td>点与分数可见；解释/导航未执行</td></tr>
+      <tr><td>PurchaseOrder</td><td>plan、price、renewal、status、restore</td><td>支付/会员</td><td>权益</td><td>方案和恢复入口确认；订单对象未观察</td></tr>
+    </tbody></table></div>
+    <h3>上下文一致性检查</h3>
+    <div class="grid g3">
+      <div class="card good"><h4>一致</h4><p>S01 的台钓/鲫鱼被 S02 修改为路亚/翘嘴鲌，S03–S06 延续新选择，符合“切换后重算”的页面承诺。</p></div>
+      <div class="card warn"><h4>不一致</h4><p>武汉位置上下文没有与分析地图/结果地名保持一致。若同会话成立，属于高风险上下文污染或渲染错配。</p></div>
+      <div class="card gold"><h4>未闭环</h4><p>会员“未开通”与深度分析结果同时可见，无法确定是免费额度、试用、演示还是门控失效。</p></div>
+    </div>
+  </section>
+
+  <section id="flow">
+    <h2>7. 数据生产者—消费者关系</h2>
+    <div class="scroll"><table><thead><tr><th>数据</th><th>生产者</th><th>消费者</th><th>修改/失效规则</th><th>观察结果</th></tr></thead><tbody>
+      <tr><td>鱼种 + 钓法</td><td>用户选择器</td><td>逐时指数、AI 找点</td><td>变更后应重算指数，并使旧候选结果失效</td><td>重算承诺与后续新状态一致；旧结果是否失效未知</td></tr>
+      <tr><td>日期 + 时段</td><td>找点配置表单</td><td>环境快照、候选排序</td><td>变更后重拉时间相关数据、重跑评分</td><td>选择可见；局部重跑未知</td></tr>
+      <tr><td>当前位置/地图视野</td><td>定位与地图</td><td>天气、GIS 分析、结果地图</td><td>必须以同一空间引用贯穿全链路</td><td class="quote">页面发生严重不一致（C01）</td></tr>
+      <tr><td>天气/水环境</td><td>外部数据与指数计算</td><td>首页、逐时表、找点排序</td><td>应带时间戳、位置与数据版本</td><td>数值可见；版本/时效未知</td></tr>
+      <tr><td>岸段与候选</td><td>GIS/排序流程</td><td>进度 UI、结果地图</td><td>必须绑定 query_id、viewport_id、run_id</td><td>数量贯通 3/12 → 3 个点；稳定引用未知</td></tr>
+      <tr><td>会员权益</td><td>会员/支付系统</td><td>鱼种锁、未来日期、AI 深度结果</td><td>支付/恢复后原子更新；不同页面读取同一版本</td><td class="quote">门控结果不易解释（C02）</td></tr>
+    </tbody></table></div>
+    <h3>输入—判断—工具—输出—交接</h3>
+    <div class="diagram"><pre class="mermaid">flowchart LR
+      U["用户选择：路亚 / 翘嘴鲌 / 今天 / 夜钓\n[S02,S04]"] --> Q["FishingQuery\n语义对象（推断）"]
+      Q --> G{"权益与免费预览门控\n[S05,S08]"}
+      G -->|"免费预览"| P["判断当前视野是否值得分析\n仅文案，结果未知"]
+      G -->|"允许深度分析"| A["AI 找钓点分析器\n功能命名，非官方 Agent"]
+      G -->|"无权益"| M["会员中心\n[S08-S09]"]
+      W["天气/水温/风/溶氧/窗口\n[S05]"] --> A
+      K["鱼种习性/钓法适配/知识库\n[S05]"] --> A
+      GIS["卫星图/岸线/到达性\n[S05-S06]"] --> A
+      A --> J{"筛选与排序\n23 段 → 候选 3/12\n[S06]"}
+      J -->|"成功"| R["3 个候选地图标记\n[S07]"]
+      J -->|"失败"| F["错误/重试/退款保护\n未知；建议补齐"]
+      R --> N["候选详情/导航\n权益文案有提及，未执行"]
+      Q -. "地点上下文冲突 C01" .-> R
+    </pre></div>
+  </section>
+
+  <section id="architecture">
+    <h2>8. 产品全景架构（As-Is 证据 + To-Be 建议）</h2>
+    <p class="lead">实线卡片代表页面可观察能力；虚线黄色为合理推断；虚线紫色为同类产品建议。技术实现没有页面证据时不冒充现状。</p>
+    <div class="arch">
+      <div class="layer"><div class="layer-title">1 用户与渠道</div><div class="layer-body"><span class="box">移动端用户</span><span class="box">位置/地图视野</span><span class="box">会员状态</span><span class="box design">位置隐私与授权中心</span></div></div>
+      <div class="layer"><div class="layer-title">2 交互层</div><div class="layer-body"><span class="box">天气首页</span><span class="box">鱼种/钓法选择器</span><span class="box">逐小时指数表</span><span class="box">AI 找钓点表单</span><span class="box">分析进度层</span><span class="box">候选结果地图</span><span class="box">会员中心</span></div></div>
+      <div class="layer"><div class="layer-title">3 应用能力</div><div class="layer-body"><span class="box">天气与鱼情指数</span><span class="box">目标配置</span><span class="box">地理空间找点</span><span class="box">会员权益/付费</span><span class="box infer">历史任务</span><span class="box infer">提醒</span></div></div>
+      <div class="layer"><div class="layer-title">4 编排与状态</div><div class="layer-body"><span class="box infer">FishingQuery 构建</span><span class="box infer">权益门控</span><span class="box infer">四阶段分析工作流</span><span class="box infer">候选排序</span><span class="box design">可取消任务 + 幂等重试</span><span class="box design">上下文一致性守卫</span></div></div>
+      <div class="layer"><div class="layer-title">5 领域服务</div><div class="layer-body"><span class="box infer">天气环境聚合</span><span class="box infer">鱼情指数计算</span><span class="box infer">GIS/卫星/岸线</span><span class="box infer">可达性分析</span><span class="box infer">鱼种知识</span><span class="box infer">地图渲染</span><span class="box infer">会员与支付</span></div></div>
+      <div class="layer"><div class="layer-title">6 模型/算法层</div><div class="layer-body"><span class="box">页面标签 AI·v3</span><span class="box infer">多因子评分/排序</span><span class="box infer">地理特征提取</span><span class="box design">评分校准与置信度</span><span class="box design">可解释性生成</span><span class="box design">规则安全过滤器</span></div></div>
+      <div class="layer"><div class="layer-title">7 数据与上下文</div><div class="layer-body"><span class="box infer">用户/权益上下文</span><span class="box infer">时空查询上下文</span><span class="box infer">天气时间序列</span><span class="box infer">地图与岸段实体</span><span class="box infer">分析运行记录</span><span class="box infer">候选点/评分</span><span class="box design">版本与血缘</span></div></div>
+      <div class="layer"><div class="layer-title">8 知识与规则</div><div class="layer-body"><span class="box">鱼种习性</span><span class="box">钓法适配</span><span class="box">天文/黄金窗口</span><span class="box">知识库</span><span class="box design">禁钓区/保护区规则</span><span class="box design">天气与水域安全规则</span></div></div>
+      <div class="layer"><div class="layer-title">9 基础设施与治理</div><div class="layer-body"><span class="box design">时空数据库/索引</span><span class="box design">天气缓存与时效校验</span><span class="box design">异步任务队列</span><span class="box design">观测与审计</span><span class="box design">支付事务</span><span class="box design">隐私脱敏</span><span class="box design">数据供应商降级</span></div></div>
+    </div>
+
+    <h3>核心实体关系（推导设计）</h3>
+    <div class="diagram"><pre class="mermaid">erDiagram
+      USER ||--o| ENTITLEMENT : has
+      USER ||--o{ FISHING_QUERY : creates
+      FISHING_QUERY }o--|| FISH_SPECIES : targets
+      FISHING_QUERY }o--|| FISHING_METHOD : uses
+      FISHING_QUERY ||--|| MAP_VIEWPORT : scopes
+      FISHING_QUERY ||--o| ANALYSIS_RUN : starts
+      WEATHER_SNAPSHOT ||--o{ ANALYSIS_RUN : informs
+      MAP_VIEWPORT ||--o{ SHORELINE_SEGMENT : contains
+      FISH_KNOWLEDGE ||--o{ ANALYSIS_RUN : informs
+      ANALYSIS_RUN ||--o{ CANDIDATE_SPOT : produces
+      CANDIDATE_SPOT ||--o| SCORE_EXPLANATION : explains
+      ENTITLEMENT ||--o{ FEATURE_ACCESS : grants
+      USER ||--o{ PURCHASE_ORDER : places
+    </pre></div>
+
+    <h3>推荐目标架构的关键护栏</h3>
+    <div class="grid g3">
+      <div class="card"><h4>时空一致性守卫</h4><p>每次分析将 location_id、viewport_hash、坐标系、天气数据位置、结果图层绑定到同一 run_id；任何不一致都阻止发布结果。</p></div>
+      <div class="card"><h4>权益与扣费原子性</h4><p>权益校验、次数预占、任务成功、次数确认形成事务；失败/中断释放预占，重复请求使用 idempotency_key。</p></div>
+      <div class="card"><h4>结果可信度与解释</h4><p>展示数据时间、地图版本、因子贡献、置信度、可达性来源和限制，不以单一“94分”替代判断依据。</p></div>
+      <div class="card"><h4>安全合规过滤</h4><p>候选点先过滤禁钓区、保护区、私有岸线、危险岸坡、夜间不可达点，再进入排序。</p></div>
+      <div class="card"><h4>可撤销状态机</h4><p>配置、执行、验证、完成、失败、中断、重试均有明确状态；用户关闭界面不等同于取消后台任务。</p></div>
+      <div class="card"><h4>版本与反馈闭环</h4><p>保存 query/version/result；用户修改局部参数生成新版本，不覆盖已确认结果；实际出钓反馈用于校准评分。</p></div>
+    </div>
+  </section>
+
+  <section id="opportunities">
+    <h2>9. 用户痛点与产品机会</h2>
+    <div class="scroll"><table><thead><tr><th>优先级</th><th>问题</th><th>页面证据</th><th>机会</th><th>衡量方式</th></tr></thead><tbody>
+      <tr><td>P0</td><td>输入地点与分析/结果地点疑似错配，直接破坏安全与信任</td><td>C01 / S01、S06、S07</td><td>时空一致性守卫；结果页显式显示“分析范围、坐标系、数据时间”；错配自动阻断</td><td>跨地点错配率、用户纠错率、结果放弃率</td></tr>
+      <tr><td>P0</td><td>免费预览、AI 调用和会员解锁边界互相矛盾</td><td>C02 / S05、S06、S08</td><td>开始前展示本次消耗、免费可见内容、会员额外内容；统一权益状态源</td><td>付费页跳失、投诉率、权益误判率</td></tr>
+      <tr><td>P1</td><td>候选分数强，但依据、风险与可达性解释弱</td><td>S06–S07</td><td>候选详情卡展示因子贡献、置信度、岸线照片/时效、合法性与安全提示</td><td>详情打开率、导航转化、线下“有效钓点”反馈</td></tr>
+      <tr><td>P1</td><td>结果后缺乏清晰的修改、反馈与局部重跑入口</td><td>S07 未见入口</td><td>“改时间/改鱼种/换视野/排除该点”快速重跑；保留版本差异</td><td>重跑完成率、纠偏成功率</td></tr>
+      <tr><td>P1</td><td>执行失败、中断和重复扣费行为不可见</td><td>截图无异常路径</td><td>可取消任务、断点恢复、幂等请求、扣费预占/释放、明确错误码</td><td>重复任务率、失败恢复率、扣费申诉率</td></tr>
+      <tr><td>P2</td><td>首页与指数页信息密度高，解释依赖用户经验</td><td>S01、S03</td><td>按“今天是否适合—何时—去哪—为什么”渐进展开；个性化解释</td><td>首屏决策时长、关键入口点击率</td></tr>
+    </tbody></table></div>
+    <h3>用户的想法与感受（可供补充）</h3>
+    <div class="grid g4"><div class="card"><b>首页</b><p>“74 分看起来可以去，但高温预警会不会影响安全？”</p><span class="tag infer">合理推断</span></div><div class="card"><b>配置</b><p>“我能按自己的鱼种和夜钓计划筛，比较像专业工具。”</p><span class="tag infer">合理推断</span></div><div class="card"><b>等待</b><p>“系统评估了很多岸段，似乎很专业；但它分析的是不是我当前的位置？”</p><span class="tag infer">合理推断</span></div><div class="card"><b>付费</b><p>“我刚才已经看到候选点，会员到底额外解锁什么？会不会自动续费？”</p><span class="tag infer">合理推断</span></div></div>
+  </section>
+
+  <section id="unknowns">
+    <h2>10. 事实、推断、建议与未知清单</h2>
+    <div class="grid g2">
+      <div class="card"><h3>【已确认】</h3><ul><li>用户可切换钓法/鱼种，页面声明会重算指数。</li><li>逐小时指数包含天气、气温、风向/风速、水温、光照和指数。</li><li>AI 找钓点配置使用鱼种、日期、时段与当前视野。</li><li>执行页展示 4 个阶段、评估段数、候选数与评分。</li><li>结果页显示 3 个候选点。</li><li>会员状态显示未开通，并有月/年/永久方案和协议入口。</li></ul></div>
+      <div class="card"><h3>【合理推断】</h3><ul><li>产品以结构化查询对象驱动一次地理空间分析运行。</li><li>天气、鱼种知识、GIS/岸线和到达性是候选排序输入。</li><li>会员权益服务控制鱼种、未来日期及深度找点能力。</li><li>运行指标由后台工作流写入并由进度层读取。</li><li>鱼种/钓法或时间变化应使旧候选结果失效。</li></ul></div>
+      <div class="card"><h3>【建议设计】</h3><ul><li>建立 run_id 级时空一致性、数据血缘和版本管理。</li><li>对禁钓/危险/不可达点执行硬过滤。</li><li>结果必须带评分解释、置信度和数据时效。</li><li>权益、用量和支付使用幂等事务；中断不重复扣费。</li><li>提供修改、局部重跑、历史对比和用户反馈闭环。</li></ul></div>
+      <div class="card warn"><h3>【未知】</h3><ul><li>`AI·v3` 是模型、算法版本还是营销标签。</li><li>是否使用 LLM、视觉模型、遥感模型或纯规则评分。</li><li>候选坐标与评分公式、数据供应商、更新频率。</li><li>免费预览与会员深度分析的真实界线。</li><li>历史任务是否保存；失败、重试、中断、扣费处理。</li><li>截图的武汉与北京地理信息是否来自同一运行。</li></ul></div>
+    </div>
+
+    <h3>最值得继续验证的 5 个问题</h3>
+    <ol>
+      <li><b>同一 run 的位置链路是什么？</b> 从首页位置、地图视野、天气数据到候选点，是否共享同一 location_id / 坐标系 / viewport？</li>
+      <li><b>免费用户究竟能看到什么？</b> “不调用 AI”的预览结果、`AI·v3` 分析页和 3 个候选点分别对应什么权益状态和次数消耗？</li>
+      <li><b>87/100 与候选点 94 分如何计算？</b> 因子、权重、硬过滤、置信度和数据时间是否可解释、可审计？</li>
+      <li><b>任务失败或关闭页面后发生什么？</b> 后台是否继续、是否扣次数、能否恢复、重试是否幂等？</li>
+      <li><b>候选点如何保障线下安全与合规？</b> 禁钓区、私人土地、夜间可达性、水位与高温预警是否进入过滤和提示？</li>
+    </ol>
+    <div class="callout"><strong>停止边界：</strong>本报告只完成截图取证、用户旅程、功能 Agent 契约与产品全景架构；没有访问或修改原产品，没有还原隐藏思维链、官方 System Prompt、真实 API 或内部工具列表。</div>
+  </section>
+  </main>
+  <footer class="footer"><div class="wrap">本地分析报告 · reverse-ai-product-architecture · Evidence IDs S01–S09</div></footer>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({startOnLoad:true,theme:'base',securityLevel:'loose',themeVariables:{primaryColor:'#dceeff',primaryTextColor:'#142033',primaryBorderColor:'#4c81a8',lineColor:'#557590',secondaryColor:'#fff2c8',tertiaryColor:'#ede5ff',fontFamily:'-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Microsoft YaHei,sans-serif'}});
+  </script>
+</body>
+</html>

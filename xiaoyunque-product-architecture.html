@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小云雀 AI｜公开证据版用户旅程、Agent 契约与产品全景架构</title>
+<style>
+:root{color-scheme:dark;--bg:#08090d;--panel:#14151b;--panel2:#1b1d26;--ink:#f7f4f7;--muted:#aaa4ad;--line:#34313b;--accent:#ff3fa3;--accent2:#7c7cff;--fact:#49d491;--infer:#ffb95c;--design:#96a4ff;--unknown:#aaa3aa;--bad:#ff7287}
+*{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--bg)}body{margin:0;background:radial-gradient(circle at 80% 0,#2d1028 0,transparent 24%),var(--bg);color:var(--ink);font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif}.layout{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}aside{position:sticky;top:0;height:100vh;overflow:auto;padding:24px 16px;border-right:1px solid var(--line);background:rgba(8,9,13,.93);backdrop-filter:blur(18px)}main{min-width:0;padding:44px clamp(18px,4vw,64px) 90px;max-width:1600px}nav{display:grid;gap:3px;margin-top:20px}nav a{color:var(--muted);text-decoration:none;padding:7px 9px;font-size:12px;border-radius:7px}nav a:hover{background:var(--panel);color:#fff}.brand{color:var(--accent);font-weight:800;letter-spacing:.08em}.hero{padding:26px 0 30px}.hero h1{font-size:clamp(38px,6vw,78px);line-height:1.02;margin:12px 0 18px;max-width:1120px}.hero p{max-width:980px;color:var(--muted);font-size:16px}.meta,.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.tag{border:1px solid var(--line);border-radius:999px;padding:5px 9px;font-size:11px;background:#111218}.fact{color:var(--fact);border-color:#267753}.infer{color:var(--infer);border-color:#795a23}.design{color:var(--design);border-color:#55529c}.unknown{color:var(--unknown)}section{scroll-margin-top:20px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line)}h2{font-size:28px;margin:0 0 8px}h3{font-size:20px;margin:28px 0 12px}h4{font-size:15px;margin:18px 0 8px}.lead{color:var(--muted);max-width:1050px}.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px}.card h3,.card h4{margin-top:0}.kpi{font-size:34px;font-weight:850;color:var(--accent)}p,li,td,th{font-size:12.5px;line-height:1.65}.muted{color:var(--muted)}a{color:#ff83c4}.callout{padding:15px 17px;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;background:#121319;margin:14px 0}.warn{border-left-color:var(--bad)}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:11px}table{width:100%;min-width:980px;border-collapse:collapse;background:#101116}th,td{padding:10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th{color:#c1bac5;background:#181922;position:sticky;top:0}.diagram{overflow:auto;background:#f8f7fb;color:#111522;border-radius:12px;padding:14px}.mermaid{min-width:920px}.agent{margin-top:18px;border-top:3px solid var(--accent)}.agent-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.io{display:grid;grid-template-columns:1fr 1fr;gap:18px}.arch{display:grid;gap:9px}.layer{display:grid;grid-template-columns:165px 1fr;gap:10px}.layer-title{padding:12px;background:#2a1d30;border:1px solid #5f3455;border-radius:9px;font-weight:800}.layer-body{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:#111218;border:1px solid var(--line);border-radius:9px}.box{padding:8px 10px;border:1px solid #4c4752;border-radius:8px;background:#1c1d24}.box.infer{border-style:dashed;border-color:#88662f}.box.design{border-style:dashed;border-color:#6766a8}.source{font-size:11px;color:#d997be}.source a{color:#f1a4cc}.journey{display:grid;grid-template-columns:120px repeat(6,minmax(165px,1fr));gap:7px;overflow:auto}.lane{display:contents}.lane-name{position:sticky;left:0;z-index:2;padding:12px;background:#2a1d30;border:1px solid #5f3455;border-radius:9px;font-weight:800}.node{min-height:138px;padding:12px;background:#161820;border:1px solid var(--line);border-radius:9px;position:relative}.node:not(:last-child):after{content:"→";position:absolute;right:-8px;top:44%;color:var(--accent);z-index:3}.decision{border-color:#82672d;background:#231e12}.fail{border-color:#80404c;background:#26151a}.footer{margin-top:60px;color:var(--muted);font-size:11px}.toc-title{font-size:14px;line-height:1.4}.status{padding:8px;border:1px solid var(--line);border-radius:9px;margin-top:12px;color:var(--muted);font-size:11px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}aside{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--line)}nav{display:flex;overflow:auto;white-space:nowrap}.g2,.g3,.g4,.io{grid-template-columns:1fr}.layer{grid-template-columns:1fr}main{padding-top:28px}.journey{grid-template-columns:100px repeat(6,165px)}}
+@media print{aside{display:none}.layout{display:block}body{background:#fff;color:#111}.card,.callout,table,.layer-body,.node{background:#fff;color:#111;box-shadow:none}.muted,.lead{color:#555}section{break-inside:avoid}}
+</style>
+</head>
+<body><div class="layout">
+<aside><div class="brand">小云雀 AI</div><div class="toc-title">公开证据版产品逆向分析</div><div class="status">证据截止：2026-08-19<br>来源：官方首页、官方协议、火山引擎产品/API 文档<br>未登录、未触发生成</div><nav>
+<a href="#summary">01 执行摘要</a><a href="#scope">02 范围与缺口</a><a href="#evidence">03 证据登记</a><a href="#domains">04 功能域</a><a href="#journey">05 用户旅程</a><a href="#agents">06 Agent 契约</a><a href="#tools">07 工具与异常</a><a href="#context">08 上下文与数据流</a><a href="#models">09 模型与知识</a><a href="#architecture">10 全景架构</a><a href="#asis">11 As-Is / To-Be</a><a href="#risks">12 风险与未知</a>
+</nav></aside>
+<main>
+<div class="hero"><div class="brand">REVERSE AI PRODUCT ARCHITECTURE</div><h1>小云雀 AI<br>用户旅程、Agent 契约与产品全景架构</h1><p>基于官方公开材料的证据受限版。它回答“小云雀公开承诺了什么、哪些 Agent 和接口可以确认、合理的数据与状态关系是什么”，但不假装看见登录后的真实工作台、内部 Prompt、隐藏思维链或完整生成流水线。</p><div class="meta"><span class="tag fact">【已确认】官方页面/文档</span><span class="tag infer">【合理推断】跨证据关系</span><span class="tag design">【建议设计】目标架构</span><span class="tag unknown">【未知】登录后/内部实现</span></div></div>
+
+<section id="summary"><h2>1. 执行摘要</h2><p class="lead">小云雀公开定位为“抖音旗下的内容创作 Agent”，公开入口同时覆盖灵感输入、短剧/通用创作和多类创意营销工具；火山引擎又公开了智能生视频 Agent 与营销成片 Agent 的异步任务接口。</p>
+<div class="grid g4"><div class="card"><div class="kpi">3</div><b>可确认 Agent 类型</b><p class="muted">短剧 Agent、智能生视频 Agent、营销成片 Agent。</p></div><div class="card"><div class="kpi">4</div><b>官方 API 动作</b><p class="muted">两类 Agent 各有提交与查询任务接口。</p></div><div class="card"><div class="kpi">4</div><b>备案模型类别</b><p class="muted">豆包大模型、豆包文生图、豆包视频生成、DeepSeek Chat。</p></div><div class="card"><div class="kpi">0</div><b>已验证真实成片</b><p class="muted">本轮未登录、未生成、未下载或播放结果。</p></div></div>
+<div class="callout"><b>核心判断：</b>【合理推断】产品形态是“多入口创作应用 + 领域 Agent + 异步媒体任务 + 素材与安全治理”。但官网没有证明三个 Agent 会在同一消费者项目中自动互相交接；多 Agent 编排仍是【未知】。</div>
+</section>
+
+<section id="scope"><h2>2. 查看范围与证据缺口</h2><div class="grid g2"><div class="card"><h3>本次查看</h3><ul><li>小云雀官方首页的灵感输入、短剧/通用创作、工具分类和精选作品入口。</li><li>官方登录页可见的手机号验证码/抖音登录与协议确认。</li><li>火山引擎“小云雀公测”的智能生视频/营销成片提交与查询任务清单。</li><li>智能生视频 Agent 提交接口的参数、成功响应和错误码。</li><li>官方用户协议、隐私政策、算法与模型备案说明。</li></ul></div><div class="card"><h3>未访问或无法确认</h3><ul><li>登录后实际工作台、对话、画布、卡片、确认门和历史版本。</li><li>短剧 Agent 如何解析剧本、拆角色/场景/分镜及是否逐步确认。</li><li>真实生成任务进度、最终视频质量、剪辑/下载/发布入口。</li><li>消费者端积分、会员、扣费、失败重试和中断恢复。</li><li>三个 Agent 的共享项目上下文、资产稳定引用和交接协议。</li></ul></div></div>
+<div class="callout warn"><b>重要限制：</b>官网“精选短片”和用户评价能证明结果展示与产品主张，不能证明任一公开样片完全由本次可见流程生成，也不能替代对具体资产的质量验证。</div></section>
+
+<section id="evidence"><h2>3. 证据登记表</h2><div class="table-wrap"><table><thead><tr><th>ID</th><th>来源</th><th>可见原文/控制</th><th>支持结论</th><th>限制</th></tr></thead><tbody>
+<tr><td>WEB-01</td><td>小云雀官方首页</td><td>“抖音旗下的内容创作Agent”；输入框“输入你的灵感，即刻开始创作大片”；按钮“开始创作”</td><td>公开入口、文本灵感输入、Agent 产品定位</td><td>未提交输入</td></tr>
+<tr><td>WEB-02</td><td>小云雀官方首页</td><td>“专业内容创作Agent”“Seedance 2.0 短剧 Agent”“短剧创作 / 通用创作”“10万字剧本解析”</td><td>短剧 Agent 与模式入口</td><td>内部步骤和输出未知</td></tr>
+<tr><td>WEB-03</td><td>小云雀官方首页</td><td>剧情广告、三视图生成、达人带货、提示词提取、分镜脚本编写、品牌大片、知识类视频生成、字幕擦除</td><td>公开工具/应用能力清单</td><td>未证明每项均为独立 Agent</td></tr>
+<tr><td>AUTH-01</td><td>官方登录页</td><td>手机号验证码登录、抖音登录；同意用户协议、隐私政策、AI 功能使用规范</td><td>创作前账号/协议门</td><td>登录后页面未知</td></tr>
+<tr><td>API-01</td><td>火山引擎智能生视频提交接口</td><td>必填 prompt；可选图片/视频、比例、时长、语言、口音、水印；成功返回 task_id</td><td>智能生视频 Agent 输入/异步任务契约</td><td>消费者网页是否使用同一接口未知</td></tr>
+<tr><td>API-02</td><td>火山引擎 API 概览</td><td>智能生视频 Agent、营销成片 Agent 均有“提交任务/查询任务”</td><td>两类 B2B Agent 的任务生命周期</td><td>查询返回的视频字段未完整抓取</td></tr>
+<tr><td>API-03</td><td>智能生视频错误码</td><td>输入/输出安全拦截、参数错误、素材解码/大小/时长错误、并发/QPS、权限、内部错误</td><td>失败类型与部分恢复条件</td><td>网页如何向用户解释未知</td></tr>
+<tr><td>POL-01</td><td>用户服务协议</td><td>提供 AI 内容生成、信息发布、互动交流、搜索查询；AI 内容标识与合法授权要求</td><td>产品服务与治理边界</td><td>不是具体执行日志</td></tr>
+<tr><td>POL-02</td><td>算法及模型备案</td><td>豆包大模型、豆包文生图、豆包视频生成、DeepSeek Chat 等应用于 AI 内容生成/对话创作</td><td>可确认模型类别</td><td>具体任务路由、版本和占比未知</td></tr>
+<tr><td>POL-03</td><td>隐私政策</td><td>导入素材/导出内容可能请求相册或存储权限；原始素材会上传服务端处理</td><td>素材权限与服务端处理</td><td>保留期、项目级隔离细节需进一步查证</td></tr>
+</tbody></table></div>
+<p class="source">官方来源：<a href="https://xyq.jianying.com/">小云雀官网</a> · <a href="https://xyq.jianying.com/login?enter_from=new_landing_page&amp;enter_method=web_homepage_page_design">登录页</a> · <a href="https://api.volcengine.com/api-docs/view?action=PippitIV2VCVToBSubmitTask&amp;serviceCode=cv&amp;version=2024-06-06">智能生视频提交接口</a> · <a href="https://api.volcengine.com/api-docs/?serviceCode=cv&amp;version=2024-06-06">API 概览</a> · <a href="https://sf1-cdn-tos.douyinstatic.com/obj/ies-hotsoon-draft/vco/90f421e6-b431-43d0-a02b-8f0c15164b5c.html">模型备案</a> · <a href="https://sf1-cdn-tos.douyinstatic.com/obj/ies-hotsoon-draft/vco/a40822a6-30c0-4037-919d-49230f660a25.html">用户协议</a> · <a href="https://sf1-cdn-tos.douyinstatic.com/obj/ies-hotsoon-draft/vco/503995fb-a603-4549-91a0-8316a9a2f1de.html">隐私政策</a></p></section>
+
+<section id="domains"><h2>4. 核心功能域</h2><div class="table-wrap"><table><thead><tr><th>功能域</th><th>公开行为</th><th>证据等级</th><th>关键缺口</th><th>产品风险</th></tr></thead><tbody>
+<tr><td>灵感/通用创作</td><td>输入灵感并“开始创作”</td><td>【已确认】WEB-01</td><td>参数确认、计划、画布和结果形态未知</td><td>一句话入口可能隐藏成本与不可逆生成</td></tr>
+<tr><td>短剧创作</td><td>短剧 Agent；10 万字剧本解析；短剧/通用模式切换</td><td>【已确认】WEB-02</td><td>角色、场景、分镜、视频的真实确认链未知</td><td>长剧本上下文、版本和一致性</td></tr>
+<tr><td>智能生视频</td><td>提示词 + 可选参考图/视频 → 异步视频任务</td><td>【已确认】API-01/02</td><td>查询结果、预览、编辑和导出闭环不完整</td><td>素材安全、超限、并发、生成质量</td></tr>
+<tr><td>营销成片</td><td>商品名称 + 商品主图 + 可选模特图 → 营销视频任务</td><td>【已确认】API-02</td><td>完整参数与结果格式未知</td><td>商品真实性、广告合规、人物授权</td></tr>
+<tr><td>创意营销工具</td><td>剧情广告、三视图、达人带货、提示词、分镜脚本、品牌片等</td><td>【已确认】WEB-03</td><td>工具是独立应用、Agent 还是模板未知</td><td>跨工具资产是否复用、版本是否一致</td></tr>
+<tr><td>账号与社区</td><td>登录；协议；信息发布、互动、搜索</td><td>【已确认】AUTH-01/POL-01</td><td>权限、公开/私有边界、发布流程未知</td><td>隐私、版权、误发布</td></tr>
+</tbody></table></div></section>
+
+<section id="journey"><h2>5. 用户旅程（公开入口版）</h2><p class="lead">消费者端只画到登录门；登录后不使用营销文案补全。开发者 API 流程作为独立分支。</p>
+<div class="table-wrap"><table><thead><tr><th>阶段</th><th>用户目标</th><th>用户动作</th><th>页面反馈</th><th>用户决定</th><th>状态/资产变化</th><th>情绪/阻力</th><th>证据</th></tr></thead><tbody>
+<tr><td>J01 发现能力</td><td>确认能否把灵感做成内容</td><td>浏览官网与精选短片</td><td>内容创作 Agent、精选作品、工具分类</td><td>通用创作、短剧创作或离开</td><td>无项目资产证据</td><td>期待上升；作品与实际可复制性不明</td><td>WEB-01/02/03</td></tr>
+<tr><td>J02 输入灵感</td><td>快速启动创作</td><td>在首页输入灵感，准备点“开始创作”</td><td>明确的单输入框 CTA</td><td>是否提交并进入登录</td><td>提交是否保存草稿未知</td><td>门槛低；生成成本与后续步骤不透明</td><td>WEB-01</td></tr>
+<tr><td>J03 选择模式</td><td>按内容复杂度选流程</td><td>选择“短剧创作”或“通用创作”</td><td>短剧 Agent 与 10 万字解析能力说明</td><td>长剧本/短灵感路径</td><td>项目类型可能被设置（推断）</td><td>模式含义与迁移成本未知</td><td>WEB-02</td></tr>
+<tr><td>J04 登录确认</td><td>进入创作台</td><td>手机号验证码或抖音登录；确认协议</td><td>登录页面与协议勾选</td><td>登录、返回或放弃</td><td>账号会话建立（推断）</td><td>登录打断灵感；手机号/实名要求</td><td>AUTH-01/POL-01</td></tr>
+<tr><td>J05 登录后创作</td><td>生成、修改、确认、预览成片</td><td>未知</td><td>未知</td><td>未知</td><td>未知</td><td>缺少真实截图，不能还原</td><td>【未知】</td></tr>
+<tr><td>J06 API 集成</td><td>程序化生成视频</td><td>提交 prompt、参考素材和参数；获取 task_id；查询任务</td><td>成功、处理中、结果或错误码</td><td>轮询、重试、修改输入或停止</td><td>Task → Result；结果资产结构未完全确认</td><td>异步状态和多类审核错误需产品化解释</td><td>API-01/02/03</td></tr>
+</tbody></table></div>
+<h3>三泳道旅程图</h3><div class="journey"><div class="lane"><div class="lane-name">用户</div><div class="node"><b>寻找创作工具</b><br>浏览作品与能力<br><span class="source">J01</span></div><div class="node decision"><b>选哪条路径？</b><br>短剧 / 通用 / API<br><span class="source">J02–J03</span></div><div class="node decision"><b>继续登录？</b><br>手机号 / 抖音 / 返回<br><span class="source">J04</span></div><div class="node fail"><b>登录后流程</b><br>证据缺失，停止还原<br><span class="source">J05</span></div><div class="node"><b>开发者提交任务</b><br>prompt + 参考素材<br><span class="source">J06</span></div><div class="node decision"><b>成功 / 失败？</b><br>查询结果 / 按错误修正<br><span class="source">API-03</span></div></div><div class="lane"><div class="lane-name">产品界面</div><div class="node">首页、精选短片、Agent 工具</div><div class="node">灵感输入框、短剧/通用按钮</div><div class="node">登录页与协议确认</div><div class="node fail">工作台、画布、确认卡、历史均未知</div><div class="node">API 提交与查询文档</div><div class="node">task_id / 状态 / 错误信息</div></div><div class="lane"><div class="lane-name">系统结果</div><div class="node">展示可用能力，无执行证明</div><div class="node">建立意图/模式（推断）</div><div class="node">认证与权限门（推断）</div><div class="node fail">是否规划/生成/写入资产未知</div><div class="node">创建异步任务【已确认】</div><div class="node decision">10000 成功 / 安全、超限、参数、内部失败</div></div></div></section>
+
+<section id="agents"><h2>6. Agent 清单与 I/O 契约</h2><div class="table-wrap"><table><thead><tr><th>Agent</th><th>出现位置</th><th>证据</th><th>契约完整度</th><th>边界</th></tr></thead><tbody>
+<tr><td>短剧 Agent</td><td>官网“专业内容创作 Agent”</td><td>【已确认】WEB-02</td><td>低</td><td>可确认长剧本解析与短剧创作定位；真实步骤、工具、资产与交接未知</td></tr>
+<tr><td>智能生视频 Agent</td><td>火山引擎产品/API</td><td>【已确认】API-01/02</td><td>高（提交侧）</td><td>提示词/参考素材到异步视频任务；消费者 UI 关系未知</td></tr>
+<tr><td>营销成片 Agent</td><td>火山引擎 API 概览</td><td>【已确认】API-02</td><td>中</td><td>商品信息与商品/模特图到营销成片任务</td></tr>
+<tr><td>创意 Agent</td><td>官网“Agent 工具”分类</td><td>【已确认】名称可见</td><td>不足</td><td>只有分类名称，不建立执行契约</td></tr>
+</tbody></table></div>
+
+<div class="card agent"><div class="agent-head"><div><h3>Agent：智能生视频 Agent</h3><p class="muted">官方名称；契约来自公开 B2B API，不等同于消费者网页内部实现。</p></div><span class="tag fact">提交侧证据充分</span></div><div class="io"><div><h4>1. 核心目标</h4><p>根据文字提示和可选参考图/参考视频生成视频内容。</p><h4>2. 触发条件</h4><p>调用提交任务接口；必填服务标识和 prompt，参数通过校验与安全审核。</p><h4>3. 六类输入</h4><ul><li><b>当前输入：</b>prompt（≤2000 字）、图片/视频 URL。</li><li><b>长期信息：</b>API 权限/配额可能被读取；账号偏好未知。</li><li><b>项目上下文：</b>比例、时长、语言、口音、水印。</li><li><b>上游输出：</b>可选参考素材；由谁生成未知。</li><li><b>平台能力：</b>官方备案的文本、图像、视频模型与安全规则。</li><li><b>运行时：</b>task_id、code、status、message、request_id。</li></ul><h4>4. 可观察判断</h4><p>参数/素材限制、安全前后审、权限、并发与内部状态。创意规划与质量判断不可见。</p></div><div><h4>5. 调用工具</h4><ul><li>提交视频任务（官方 API 动作可见）。</li><li>查询视频任务（官方 API 动作可见）。</li><li>输入/输出安全审核（由错误码证实存在）。</li><li>素材解码与限制校验（由错误码证实存在）。</li></ul><h4>6. 输出</h4><ul><li><b>用户回复：</b>API message。</li><li><b>页面组件：</b>不适用于公开 API；消费者 UI 未知。</li><li><b>资产：</b>视频内容是接口目标；实际结果结构未完整验证。</li><li><b>状态：</b>提交成功返回 task_id；查询状态存在。</li><li><b>下游：</b>预览、编辑、导出或发布均未知。</li></ul><h4>7. 完成条件</h4><p>不能以“提交成功”当成视频完成；必须由查询任务返回完成状态且实际视频资产可读取。【建议设计】还需验证时长、比例、语言、口音、水印和内容一致性。</p><h4>8. 异常与重试</h4><p>参数/素材错误先修正；并发/QPS可退避；安全拦截不可盲目重试；内部错误可幂等重试。官方是否提供幂等键未知。</p></div></div></div>
+
+<div class="card agent"><div class="agent-head"><div><h3>Agent：营销成片 Agent</h3><p class="muted">官方名称；公开契约较少。</p></div><span class="tag fact">API 列表确认</span></div><div class="io"><div><h4>核心目标与触发</h4><p>输入商品名称与商品主图，可选模特图，提交营销成片任务。</p><h4>输入</h4><p>商品名称、商品主图、可选模特图；其他品牌规则、卖点、受众、渠道和合规声明均【未知】。</p><h4>判断</h4><p>至少需要验证必填商品输入。广告合规、肖像授权和商品真实性是否进入判断【未知】。</p></div><div><h4>工具与输出</h4><p>官方存在提交与查询任务动作；目标输出为营销成片视频。脚本、分镜、口播、字幕是否作为中间资产暴露【未知】。</p><h4>完成条件</h4><p>必须查询到完成并验证成片存在；不应仅凭任务提交成功声称交付。</p><h4>交接</h4><p>发布、广告投放或剪辑入口未被公开证据确认。</p></div></div></div>
+
+<div class="card agent"><div class="agent-head"><div><h3>Agent：短剧 Agent</h3><p class="muted">官网明确名称，执行契约证据有限。</p></div><span class="tag unknown">需登录后取证</span></div><div class="io"><div><h4>核心目标</h4><p>面向短剧创作，支持“10万字剧本解析”。官网称其为 Seedance 2.0 短剧 Agent。</p><h4>触发</h4><p>用户选择“短剧创作”并“立即体验”；是否必须上传完整剧本、可否一句话启动未知。</p><h4>可能输入</h4><p>长剧本【已确认能力主张】；角色/场景参考、画幅、集数、风格、台词语言等【未知】。</p></div><div><h4>可观察判断与工具</h4><p>只有“剧本解析”与短剧创作定位；不能确认角色抽取、场景抽取、分镜拆解或视频生成已发生。</p><h4>输出与交接</h4><p>官网展示精选短片和“查看工作流”入口，但具体项目资产、确认点与下游编辑器均未取证。</p><h4>完成条件</h4><p>【建议设计】项目 Manifest 完整、分镜视频可播放、音画同步、角色/风格一致、用户确认记录存在后才可完成。</p></div></div></div>
+
+<h3>Agent 状态机（证据 + 建议）</h3><div class="diagram"><pre class="mermaid">stateDiagram-v2
+[*] --> public_entry: 浏览官网 [WEB-01]
+public_entry --> choosing_mode: 输入灵感 / 选择短剧或通用 [WEB-01,WEB-02]
+choosing_mode --> login_gate: 开始创作 [AUTH-01]
+login_gate --> authenticated: 登录成功（未观察）
+authenticated --> waiting_input: 工作台状态未知
+waiting_input --> submitted: API 提交任务 [API-01]
+submitted --> executing: 获得 task_id [API-01]
+executing --> completed: 查询任务完成（接口存在，结果未验证）
+executing --> failed: 安全/参数/素材/并发/内部错误 [API-03]
+failed --> waiting_input: 修正输入
+failed --> retrying: 并发或内部错误（建议幂等退避）
+retrying --> executing
+executing --> interrupted: 用户中断处理未知
+completed --> validating: 建议验证实际视频资产
+validating --> handoff: 预览/编辑/导出（未知）
+</pre></div></section>
+
+<section id="tools"><h2>7. 工具、任务与异常</h2><div class="table-wrap"><table><thead><tr><th>ID</th><th>功能/官方动作</th><th>调用者</th><th>前置条件</th><th>执行证据</th><th>成功</th><th>失败/重试</th><th>等级</th></tr></thead><tbody>
+<tr><td>T01</td><td>智能生视频 Agent_提交任务</td><td>API 客户端</td><td>prompt、权限、合法素材</td><td>官方请求/响应示例</td><td>task_id</td><td>参数、安全、权限、并发、内部错误</td><td>【已确认】</td></tr>
+<tr><td>T02</td><td>智能生视频 Agent_查询任务</td><td>API 客户端</td><td>task_id</td><td>官方 API 清单</td><td>任务结果</td><td>完整状态/错误未抓取</td><td>【已确认存在】</td></tr>
+<tr><td>T03</td><td>营销成片 Agent_提交任务</td><td>API 客户端</td><td>商品名、主图，可选模特图</td><td>官方 API 清单</td><td>异步任务</td><td>具体错误未知</td><td>【已确认存在】</td></tr>
+<tr><td>T04</td><td>营销成片 Agent_查询任务</td><td>API 客户端</td><td>任务 ID（合理推断）</td><td>官方 API 清单</td><td>营销视频结果</td><td>未知</td><td>【已确认存在】</td></tr>
+<tr><td>T05</td><td>输入/输出内容安全审核</td><td>智能生视频任务</td><td>文本/图片/结果</td><td>多项 risk error</td><td>允许继续</td><td>拦截；不可伪称随机误判</td><td>【合理推断执行点】</td></tr>
+<tr><td>T06</td><td>素材导入/上传服务端处理</td><td>消费者应用</td><td>用户授权、选择素材</td><td>隐私政策</td><td>素材可供生成</td><td>拒绝权限则无法导入/导出</td><td>【已确认政策】</td></tr>
+<tr><td>T07</td><td>脚本/分镜/三视图等创意工具</td><td>未知</td><td>未知</td><td>官网功能名</td><td>目标资产类型</td><td>未知</td><td>【名称确认，调用未知】</td></tr>
+</tbody></table></div>
+<h3>异常恢复矩阵</h3><div class="grid g3"><div class="card"><h4>可修正输入</h4><p>缺参、类型错误、图片/视频为空、解码失败、尺寸/时长超限。应返回具体字段与限制，引导局部修正。</p></div><div class="card"><h4>可退避重试</h4><p>并发/QPS 超限、部分内部错误。应使用 task/request 幂等标识，避免重复创建和重复计费。</p></div><div class="card"><h4>不可盲目重试</h4><p>输入/输出安全拦截、敏感信息、人脸缺失等。应解释规则、允许合法申诉或修改，不应声称“随机误判”。</p></div></div></section>
+
+<section id="context"><h2>8. 全局上下文与数据流</h2><div class="table-wrap"><table><thead><tr><th>对象（语义设计名）</th><th>字段</th><th>生产者</th><th>消费者</th><th>更新/失效</th><th>证据等级</th></tr></thead><tbody>
+<tr><td>UserContext</td><td>account、auth_method、agreements、permissions</td><td>登录/授权</td><td>创作、素材、发布</td><td>权限撤销时限制导入/导出</td><td>部分确认 AUTH-01/POL-03</td></tr>
+<tr><td>CreationBrief</td><td>prompt、mode、language、accent、ratio、duration</td><td>用户/API</td><td>智能生视频/短剧流程</td><td>修改后下游视频应失效</td><td>API 字段确认；对象名推导</td></tr>
+<tr><td>ReferenceAsset</td><td>image/video URL、type、size、resolution、duration、rights</td><td>用户/上游工具</td><td>生成与安全审核</td><td>不可变版本；替换后重跑</td><td>限制确认；版本/权利字段建议</td></tr>
+<tr><td>ProductBrief</td><td>product_name、main_image、model_image、claims</td><td>营销用户</td><td>营销成片 Agent</td><td>商品信息修改后脚本/成片失效</td><td>前三项确认；claims 建议</td></tr>
+<tr><td>AgentRun</td><td>task_id、status、code、message、request_id、elapsed</td><td>提交/查询接口</td><td>任务 UI、轮询、审计</td><td>状态单调推进；失败可终止</td><td>部分确认 API-01</td></tr>
+<tr><td>GeneratedAsset</td><td>logical_id、version、media_url、metadata、watermark、safety_state</td><td>生成任务</td><td>预览/编辑/导出/发布</td><td>不可变版本 + 血缘</td><td>【建议设计】实际 schema 未知</td></tr>
+<tr><td>ProjectManifest</td><td>brief、script、characters、scenes、shots、audio、final_video</td><td>短剧编排</td><td>完成门/历史</td><td>上游修改标记依赖 stale</td><td>【建议设计】登录后证据缺失</td></tr>
+</tbody></table></div>
+<h3>生产者—消费者</h3><div class="diagram"><pre class="mermaid">flowchart LR
+U["用户 / API 客户端"] -->|"write: prompt / script / product brief"| B["CreationBrief / ProductBrief"]
+U -->|"upload"| R["ReferenceAsset"]
+B -->|"call"| A1["智能生视频 Agent"]
+B -. "推断 read" .-> A2["短剧 Agent"]
+B -->|"call"| A3["营销成片 Agent"]
+R -->|"asset reference"| A1
+R -->|"asset reference"| A3
+A1 -->|"write task_id/state"| RUN["AgentRun"]
+A3 -->|"write task/state"| RUN
+SAFE["安全审核"] -->|"allow / block"| RUN
+RUN -->|"query"| OUT["GeneratedAsset"]
+OUT -. "unknown handoff" .-> EDIT["预览 / 编辑 / 导出 / 发布"]
+A2 -. "recommended write" .-> MAN["ProjectManifest"]
+MAN ==>|"recommended stable refs"| OUT
+</pre></div></section>
+
+<section id="models"><h2>9. 模型访问、知识与规则</h2><div class="table-wrap"><table><thead><tr><th>模型/能力</th><th>官方证据</th><th>公开应用场景</th><th>不能据此声称</th></tr></thead><tbody>
+<tr><td>豆包大模型</td><td>模型备案</td><td>小云雀 AI 内容生成</td><td>不能确认每次文本规划都由它执行</td></tr>
+<tr><td>豆包文生图模型</td><td>模型备案</td><td>AI 内容生成</td><td>不能确认三视图/角色图的具体版本和参数</td></tr>
+<tr><td>豆包视频生成模型</td><td>模型备案</td><td>AI 内容生成</td><td>不能确认所有视频都由同一模型生成</td></tr>
+<tr><td>DeepSeek Chat</td><td>模型备案</td><td>AI 内容创作、智能文案、对话式创作</td><td>不能确认与豆包如何路由或组合</td></tr>
+<tr><td>Seedance 2.0</td><td>官网短剧 Agent 文案</td><td>短剧创作专家</td><td>不能扩展到全部工具或断言当前唯一版本</td></tr>
+</tbody></table></div>
+<div class="grid g2"><div class="card"><h3>【已确认】公共知识/规则</h3><ul><li>用户输入与生成内容需经过合法合规约束。</li><li>上传素材需拥有合法授权，涉及肖像、声音、版权。</li><li>AI 生成合成内容需要依法添加标识。</li><li>平台声明生成内容真实性、准确性、独特性和不侵权性不能被保证。</li></ul></div><div class="card"><h3>【建议设计】路由协议</h3><ul><li>以任务类型、模态、时长、比例、参考数量、语言、成本、延迟、安全和模型健康为输入。</li><li>将模型目录、限制、计费和回退策略版本化。</li><li>Prompt 负责创作意图，安全、权限、计费和版权规则由服务硬执行。</li><li>每个资产记录 model_route_version 与 source_asset_versions。</li></ul></div></div></section>
+
+<section id="architecture"><h2>10. 九层产品全景架构</h2><p class="lead">实线/普通卡片为公开可见能力，虚线黄为合理推断，虚线紫为建议设计。</p><div class="arch">
+<div class="layer"><div class="layer-title">1 用户与渠道</div><div class="layer-body"><span class="box">Web 官网</span><span class="box">iOS / Android</span><span class="box">API 客户端</span><span class="box">手机号/抖音登录</span><span class="box design">团队/租户权限</span></div></div>
+<div class="layer"><div class="layer-title">2 交互工作台</div><div class="layer-body"><span class="box">灵感输入</span><span class="box">短剧/通用模式</span><span class="box">精选作品/工作流入口</span><span class="box infer">登录后创作台</span><span class="box design">确认卡/任务中心/版本历史</span></div></div>
+<div class="layer"><div class="layer-title">3 产品应用</div><div class="layer-body"><span class="box">短剧创作</span><span class="box">通用视频</span><span class="box">营销成片</span><span class="box">三视图</span><span class="box">分镜脚本</span><span class="box">提示词提取</span><span class="box">字幕擦除</span><span class="box infer">社区/发布</span></div></div>
+<div class="layer"><div class="layer-title">4 Agent / 编排</div><div class="layer-body"><span class="box">短剧 Agent</span><span class="box">智能生视频 Agent</span><span class="box">营销成片 Agent</span><span class="box infer">异步任务状态机</span><span class="box design">确认门/取消/回滚/依赖失效</span></div></div>
+<div class="layer"><div class="layer-title">5 工具与服务</div><div class="layer-body"><span class="box">提交/查询任务</span><span class="box">素材上传/解码</span><span class="box">内容安全</span><span class="box infer">脚本/图像/视频/音频生成</span><span class="box design">质量验证/完整性清单</span></div></div>
+<div class="layer"><div class="layer-title">6 模型访问</div><div class="layer-body"><span class="box">豆包大模型</span><span class="box">豆包文生图</span><span class="box">豆包视频生成</span><span class="box">DeepSeek Chat</span><span class="box">Seedance 2.0（短剧文案）</span><span class="box design">模型网关/回退/成本路由</span></div></div>
+<div class="layer"><div class="layer-title">7 上下文与数据</div><div class="layer-body"><span class="box infer">UserContext</span><span class="box infer">CreationBrief</span><span class="box infer">ReferenceAsset</span><span class="box infer">AgentRun</span><span class="box design">ProjectManifest</span><span class="box design">AssetVersion / Lineage</span></div></div>
+<div class="layer"><div class="layer-title">8 知识与资产</div><div class="layer-body"><span class="box infer">脚本/创意模板</span><span class="box infer">视觉/剪辑知识</span><span class="box">安全与 AI 标识规则</span><span class="box">用户私有素材</span><span class="box design">公私资产隔离/版本化知识库</span></div></div>
+<div class="layer"><div class="layer-title">9 基础设施/治理</div><div class="layer-body"><span class="box infer">异步执行与并发控制</span><span class="box infer">权限与审计</span><span class="box infer">媒体存储</span><span class="box design">幂等计费</span><span class="box design">全链路追踪</span><span class="box design">租户隔离</span><span class="box design">隐私/保留期治理</span></div></div>
+</div>
+<h3>端到端序列</h3><div class="diagram"><pre class="mermaid">sequenceDiagram
+actor U as 用户/API客户端
+participant UI as 官网/创作入口
+participant AUTH as 账号与协议
+participant AG as 领域Agent
+participant SAFE as 安全/素材校验
+participant RUN as 异步任务
+participant MODEL as 模型能力
+participant ASSET as 资产/结果
+U->>UI: 输入灵感/剧本/商品信息 [WEB-01/02,API-01/02]
+UI->>AUTH: 开始创作（消费者端） [AUTH-01]
+AUTH-->>UI: 登录后状态（未观察）
+U->>AG: 提交生成参数 [API-01]
+AG->>SAFE: 校验输入与素材 [API-03]
+alt 校验通过
+  AG->>RUN: 创建任务
+  RUN-->>U: task_id [API-01]
+  RUN->>MODEL: 生成调用（模型路由未知）
+  MODEL-->>RUN: 中间/最终结果（未知）
+  U->>RUN: 查询任务 [API-02]
+  RUN-->>ASSET: 写入视频结果（目标能力）
+  ASSET-->>U: 结果/预览（未实际验证）
+else 校验失败
+  SAFE-->>U: 安全/参数/素材错误 [API-03]
+end
+</pre></div>
+<h3>核心实体关系（推导设计）</h3><div class="diagram"><pre class="mermaid">erDiagram
+USER ||--o{ PROJECT : creates
+USER ||--o| ENTITLEMENT : has
+PROJECT ||--o{ CREATION_BRIEF : versions
+PROJECT ||--o{ REFERENCE_ASSET : contains
+PROJECT ||--o{ AGENT_RUN : starts
+AGENT ||--o{ AGENT_RUN : executes
+AGENT_RUN ||--o{ TOOL_CALL : invokes
+AGENT_RUN ||--o{ MODEL_INVOCATION : routes
+AGENT_RUN ||--o{ GENERATED_ASSET : produces
+GENERATED_ASSET ||--o{ ASSET_VERSION : versions
+PROJECT ||--|| PROJECT_MANIFEST : completes
+PROJECT_MANIFEST }o--o{ ASSET_VERSION : references
+USER ||--o{ CONFIRMATION : records
+CONFIRMATION }o--|| CREATION_BRIEF : confirms
+</pre></div></section>
+
+<section id="asis"><h2>11. As-Is 与 To-Be</h2><div class="grid g2"><div class="card"><h3>As-Is｜公开可确认</h3><ul><li>官网以一句灵感和模式入口降低启动门槛。</li><li>短剧 Agent 公开声称支持 10 万字剧本解析。</li><li>智能生视频和营销成片具备提交/查询异步 API。</li><li>智能生视频提交侧参数与错误类型相对清晰。</li><li>官方公示了多类模型与内容安全/AI 标识责任。</li><li>登录后消费者创作状态、资产与交接不可见。</li></ul></div><div class="card"><h3>To-Be｜建议目标</h3><ul><li>统一 ProjectManifest 作为项目完成真相源。</li><li>每次用户确认绑定 context_version；上游修改自动标记下游 stale。</li><li>AgentRun → ToolCall → ModelInvocation → AssetVersion 全链路可追踪。</li><li>任务提交、用量预占、完成确认和失败释放事务化。</li><li>生成结果必须做存在性、可播放性、参数遵循和内容一致性验证。</li><li>用户可暂停、中断、恢复、回退与局部重跑，且保留历史版本。</li></ul></div></div>
+<h3>目标全景图</h3><div class="diagram"><pre class="mermaid">flowchart TB
+subgraph CHANNEL["用户与渠道"]
+U1["消费者 Web/App"]
+U2["企业/API 客户端"]
+end
+subgraph EXPERIENCE["交互与应用"]
+IDEA["灵感/剧本/商品输入"]
+WORK["创作工作台（登录后未知）"]
+APPS["短剧｜通用视频｜营销｜创意工具"]
+end
+subgraph ORCH["Agent 与状态编排"]
+DRAMA["短剧 Agent"]
+VIDEO["智能生视频 Agent"]
+MKT["营销成片 Agent"]
+STATE["任务状态机"]
+CONFIRM["确认/取消/回滚（建议）"]
+end
+subgraph SERVICES["工具与模型"]
+UPLOAD["素材/参数校验"]
+SAFETY["安全审核"]
+MEDIA["文本/图像/视频/音频能力"]
+GATEWAY["模型网关（建议）"]
+end
+subgraph DATA["上下文、资产与治理"]
+CTX["User / Brief / Product / Workflow Context"]
+RUN["AgentRun / ToolCall / Error"]
+ASSET["Asset / Version / Lineage"]
+MANIFEST["ProjectManifest（建议）"]
+GOV["权限｜隐私｜审计｜幂等计费｜可观测"]
+end
+U1 -->|"input"| IDEA
+U2 -->|"API call"| APPS
+IDEA --> APPS
+APPS --> DRAMA
+APPS --> VIDEO
+APPS --> MKT
+DRAMA --> STATE
+VIDEO --> STATE
+MKT --> STATE
+STATE --> UPLOAD
+UPLOAD --> SAFETY
+SAFETY --> GATEWAY
+GATEWAY --> MEDIA
+STATE -. "read/write" .-> CTX
+STATE -. "state update" .-> RUN
+MEDIA -. "asset write" .-> ASSET
+ASSET ==>|"stable refs"| MANIFEST
+CONFIRM ==>|"version gate"| STATE
+GOV ==>|"enforce"| STATE
+MANIFEST --> WORK
+classDef recommended stroke:#7668ff,stroke-width:3px,stroke-dasharray:6 4;
+class CONFIRM,GATEWAY,MANIFEST,GOV recommended;
+</pre></div></section>
+
+<section id="risks"><h2>12. 优先风险、证据追溯与未知</h2><div class="table-wrap"><table><thead><tr><th>优先级</th><th>风险</th><th>证据</th><th>影响</th><th>建议控制</th></tr></thead><tbody>
+<tr><td>P0</td><td>把任务提交成功误当成视频完成</td><td>API-01 只返回 task_id</td><td>虚假完成、下游拿不到资产</td><td>查询完成 + 资产读回 + 参数/质量验证三重完成门</td></tr>
+<tr><td>P0</td><td>长剧本/多资产修改后下游不失效</td><td>短剧长上下文主张 WEB-02；版本机制未知</td><td>角色、剧情、镜头不一致</td><td>版本化 Context + 依赖 DAG + stale 标记</td></tr>
+<tr><td>P0</td><td>重复重试导致重复任务或重复计费</td><td>并发/内部错误 API-03；幂等未知</td><td>成本、体验、账务争议</td><td>idempotency_key、用量预占/释放、任务去重</td></tr>
+<tr><td>P1</td><td>安全拦截缺少可操作解释</td><td>多类 risk error API-03</td><td>用户盲目重试、误判平台</td><td>错误分类、可修正字段、申诉与合法替代建议</td></tr>
+<tr><td>P1</td><td>私有参考素材与人物/声音权利风险</td><td>POL-01/POL-03</td><td>隐私、版权、肖像与声音侵权</td><td>授权声明、项目隔离、最小保留、审计、删除机制</td></tr>
+<tr><td>P1</td><td>模型路由和限制不可解释</td><td>多模型备案 POL-02；具体路由未知</td><td>效果、成本、版本漂移</td><td>版本化模型目录、路由原因、回退与变更公告</td></tr>
+</tbody></table></div>
+<h3>架构—证据追溯</h3><div class="table-wrap"><table><thead><tr><th>组件</th><th>为何需要</th><th>证据</th><th>等级</th><th>置信度</th></tr></thead><tbody>
+<tr><td>短剧 Agent</td><td>长剧本到短剧创作</td><td>WEB-02</td><td>已确认名称/定位</td><td>高</td></tr><tr><td>智能生视频 Agent</td><td>提示词/参考素材到视频</td><td>API-01/02</td><td>已确认</td><td>高</td></tr><tr><td>营销成片 Agent</td><td>商品信息到营销视频</td><td>API-02</td><td>已确认</td><td>高</td></tr><tr><td>异步任务状态机</td><td>提交与查询分离</td><td>API-01/02</td><td>合理推断</td><td>高</td></tr><tr><td>安全审核</td><td>输入/输出多类 risk error</td><td>API-03/POL-01</td><td>已确认能力</td><td>高</td></tr><tr><td>共享项目上下文</td><td>短剧跨角色/分镜一致</td><td>只有产品主张</td><td>合理推断</td><td>中</td></tr><tr><td>ProjectManifest</td><td>防止口头完成和资产缺失</td><td>无现状证据</td><td>建议设计</td><td>设计建议</td></tr><tr><td>动态模型路由</td><td>多模型能力选择</td><td>POL-02</td><td>未知/建议</td><td>低</td></tr>
+</tbody></table></div>
+<h3>最值得继续取证的 8 个问题</h3><ol><li>登录后的第一条 Agent 回复是什么？是否先规划、追问或直接生成？</li><li>短剧 Agent 是否把剧本拆成角色、场景、道具、分镜等独立可编辑资产？</li><li>每一步是否需要用户确认，确认结果是否写入稳定状态而非只留在聊天中？</li><li>角色/场景/分镜之间是否存在稳定引用；修改剧本后哪些资产自动失效？</li><li>真实任务页有哪些 waiting、executing、failed、interrupted、retrying、completed 状态？</li><li>生成成功后，视频是否实际可播放、可编辑、可下载，音频/字幕是否独立存在？</li><li>积分/会员/用量在何时检查和扣除；失败、中断、重复请求如何处理？</li><li>消费者端显示的模型名、比例、时长、分辨率和限制是否与 API 一致？</li></ol>
+<div class="callout"><b>停止边界：</b>本报告不继续编写任何 Agent 的功能等价 System Prompt，也不声称还原官方内部编排。若补充登录后完整截图，可在此报告上增量补齐真实用户旅程、Agent 交接和资产状态冲突。</div></section>
+
+<div class="footer">小云雀 AI 公开证据版产品架构报告 · 生成于 2026-08-19 · 所有现状结论均追溯至官方公开来源</div>
+</main></div>
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'base',securityLevel:'loose',themeVariables:{primaryColor:'#ffe2f2',primaryTextColor:'#17121a',primaryBorderColor:'#c74388',lineColor:'#5e5870',secondaryColor:'#e8e6ff',tertiaryColor:'#fff6dc',fontFamily:'Inter,PingFang SC,Microsoft YaHei,sans-serif'}});</script>
+</body></html>
